@@ -1,0 +1,228 @@
+import os
+import smtplib
+import tkinter as tk
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formatdate
+from os.path import basename
+from tkinter.filedialog import asksaveasfilename, askopenfilename
+from tkinter import messagebox
+
+
+def generatesourcetestbed():
+    txt_edit.delete("1.0", tk.END)
+    filepath = askopenfilename(initialdir=os.getcwd(), filetypes=[("Excel file", "*.xls")])
+    print(filepath)
+    if not filepath:
+        return
+    try:
+        os.system('pyats create testbed file --path ' + filepath + ' --output sourcetestbed.yml')
+        txt_edit.insert(tk.END, "Testbed file created.")
+        btn_load_target["state"] = "active"
+    except:
+        txt_edit.insert(tk.END, "Tesbed file format is wrong")
+
+
+def generatetargettestbed():
+    txt_edit.delete("1.0", tk.END)
+    filepath = askopenfilename(initialdir=os.getcwd(), filetypes=[("Excel file", "*.xls")])
+    if not filepath:
+        return
+    try:
+        os.system('pyats create testbed file --path ' + filepath + ' --output targettestbed.yml')
+        txt_edit.insert(tk.END, "Testbed file created.")
+        btn_script1["state"] = "active"
+    except:
+        txt_edit.insert(tk.END, "Tesbed file format is wrong")
+
+
+def run_script1():
+    txt_edit.config(state=tk.NORMAL)
+    txt_edit.delete("1.0", "end")
+    value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
+    if value:
+        try:
+            os.system('pyats run job job.py --html-logs .')
+            filepath = "log/source_up.csv"
+            report_filepath = "log/report.txt"
+            with open(filepath, "r") as input_file:
+                text = input_file.read()
+                txt_edit.insert(tk.END, text)
+            txt_edit.insert(tk.END, '\n')
+            with open(report_filepath, "r") as input_file:
+                text = input_file.read()
+                txt_edit.insert(tk.END, text)
+                txt_edit.config(state=tk.DISABLED)
+            btn_save["state"] = "active"
+            btn_email["state"] = "active"
+            btn_report["state"] = "active"
+            btn_script3["state"] = "active"
+        except:
+            txt_edit.insert(tk.END, "Error occurred while running the script")
+
+
+def view_report():
+    txt_edit.delete("1.0", "end")
+    value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
+    if value:
+        btn_save["state"] = "active"
+        btn_email["state"] = "active"
+        txt_edit.config(state=tk.NORMAL)
+        txt_edit.delete("1.0", tk.END)
+        filepath = "log/report_log.csv"
+        with open(filepath, "r") as input_file:
+            text = input_file.read()
+            txt_edit.insert(tk.END, text)
+            window.title(f"Switch port Consolidation - {filepath}")
+            txt_edit.config(state=tk.DISABLED)
+        txt_edit.insert(tk.END, '\n')
+
+
+def run_targetconfig():
+    txt_edit.delete("1.0", "end")
+    value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
+    if value:
+        txt_edit.config(state=tk.NORMAL)
+        txt_edit.delete("1.0", tk.END)
+        os.system('python target_config.py')
+        filepath = "log/target_after_configlog.csv"
+        with open(filepath, "r") as input_file:
+            text = input_file.read()
+            txt_edit.insert(tk.END, text)
+            txt_edit.config(state=tk.DISABLED)
+
+
+def save_file():
+    """Save the current file as a new file."""
+    filepath = asksaveasfilename(
+        defaultextension="txt",
+        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
+    )
+    if not filepath:
+        return
+    with open(filepath, "w") as output_file:
+        text = txt_edit.get("1.0", tk.END)
+        output_file.write(text)
+    window.title(f"Switch port Consolidation - {filepath}")
+
+
+def openNewWindow():
+    newWindow = tk.Toplevel(window)
+    newWindow.rowconfigure(0, minsize=80, weight=1)
+    newWindow.columnconfigure(1, minsize=80, weight=1)
+    newWindow.configure(bg='#ededed')
+    newWindow.title("Send email")
+    l1 = tk.Label(newWindow, text="Email address: ", bg='#ededed')
+    l1.grid(row=0, column=0, padx=(10, 10))
+    e1 = tk.Entry(newWindow, bg='white')
+    e1.grid(row=0, column=1, columnspan=10)
+    btn_send_email = tk.Button(newWindow, text="Send email", command=lambda: send_email(e1, newWindow), fg='green',
+                               bg='light green')
+    btn_send_email.grid(row=1, column=1)
+
+
+def send_email(e1, newWindow):
+    subject = "Switch log file"
+    body = "Hi, \n\nSee the log file from switch attached in this mail. \n\nThank you, \nRespiro team."
+    sender_email = "respirotest0@gmail.com"
+    receiver_email = e1.get()
+    password = "respiroemail"
+
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = e1.get()
+    message["Subject"] = subject
+    message["Date"] = formatdate(localtime=True)
+
+    message.attach(MIMEText(body, "plain"))
+    filename = {"log/source_log.txt", "TaskLog.job.html", "log/target_log.txt", "log/report.txt"}
+    for items in filename:
+        try:
+            with open(items, "rb") as fil:
+                part = MIMEApplication(
+                    fil.read(),
+                    Name=basename(items)
+                )
+                # After the file is closed
+                part['Content-Disposition'] = 'attachment; filename="%s"' % basename(items)
+                message.attach(part)
+        except:
+            messagebox.showerror("Error", "There was an error while sending attachments. Run the script to generate "
+                                          "the attachments")
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+        newWindow.destroy()
+    except:
+        messagebox.showerror("Error", "There was an error while sending email")
+
+
+def viewlog():
+    txt_edit.config(state=tk.NORMAL)
+    filepath = askopenfilename(initialdir=os.getcwd() + "/log",
+                               filetypes=[("Text Files", "*.txt"), ("CSV files", "*.csv")])
+    if not filepath:
+        return
+    txt_edit.delete("1.0", tk.END)
+    with open(filepath, "r") as input_file:
+        text = input_file.read()
+        print(text)
+        txt_edit.insert(tk.END, text)
+    window.title(f"Simple Text Editor - {filepath}")
+
+
+window = tk.Tk()
+window.title("Respiro | Switch port Consolidation")
+
+window.rowconfigure(0, minsize=400, weight=1)
+window.columnconfigure(1, minsize=500, weight=1)
+
+txt_edit = tk.Text(window, bg='white')
+fr_buttons = tk.Frame(window, bg='#b9e2f5')
+txt_edit.config(state=tk.DISABLED)
+btn_load_source = tk.Button(fr_buttons, text="Upload source switch testbed excel file(*.xls)",
+                            command=generatesourcetestbed, bg="red")
+btn_load_source.config(fg='#000000')
+
+btn_load_target = tk.Button(fr_buttons, text="Upload target switch testbed excel file(*.xls)",
+                            command=generatetargettestbed, bg="red")
+btn_load_target.config(fg='#000000')
+
+btn_script1 = tk.Button(fr_buttons, text="Run script to check port status on switches", command=run_script1)
+
+btn_report = tk.Button(fr_buttons, text="View recommended port migration log", command=view_report,
+                       activebackground='#a9a9a9')
+
+btn_script3 = tk.Button(fr_buttons, text="Run script to verify the port migration", activebackground='#a9a9a9',
+                        command=run_targetconfig)
+
+btn_save = tk.Button(fr_buttons, text="Save As...", command=save_file, activebackground="#a9a9a9")
+
+btn_email = tk.Button(fr_buttons, text="Send log files as email", command=openNewWindow, activebackground="#a9a9a9")
+
+btn_logs = tk.Button(fr_buttons, text="View all logs", command=viewlog, activebackground="#a9a9a9")
+
+btn_load_source.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+btn_load_target.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
+btn_script1.grid(row=2, column=0, sticky="ew", padx=5, pady=5)
+btn_report.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
+btn_script3.grid(row=4, column=0, sticky="ew", padx=5, pady=5)
+btn_save.grid(row=5, column=0, sticky="ew", padx=5, pady=5)
+btn_email.grid(row=6, column=0, sticky="ew", padx=5, pady=5)
+btn_logs.grid(row=7, column=0, sticky="ew", padx=5, pady=5)
+
+fr_buttons.grid(row=0, column=0, sticky="ns")
+txt_edit.grid(row=0, column=1, sticky="nsew")
+
+btn_save["state"] = "disable"
+btn_report["state"] = "disable"
+btn_script3["state"] = "disable"
+btn_script1["state"] = "disable"
+btn_email["state"] = "disable"
+btn_load_target["state"] = "disable"
+
+window.mainloop()
