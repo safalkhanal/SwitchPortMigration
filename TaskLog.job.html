@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LogViewer</title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="styles.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>job</title>
+</head>
+<style type="text/css">
+    /*************************************************/
+/* Main element styling */
+
+body,
+.side-nav.fixed,
+.side-nav.fixed .collapsible li,
+.collapsible-header {
+    background-color: #fcfcfc;
+}
+
+nav, nav .nav-wrapper i, .side-nav-head {
+    height: 50px;
+    line-height: 50px !important;
+}
+
+header, main {
+    /*padding-left: 300px;*/
+}
+.side-nav-head {
+    color: #fff;
+}
+
+main>.container {
+    padding-top: 5px;
+}
+
+main>div.row {
+    margin: 0 2rem;
+    padding-top: 1.6rem;
+}
+
+h6 {
+  margin: 0;
+  padding-top: 2px;
+}
+
+.container {
+  max-width: none !important;
+}
+
+.button-collapse, .page-title, .search {
+  display: inline-block;
+}
+
+.nav-title {
+    color: rgba(0, 0, 0, 0.87);
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 400;
+    height: 48px;
+    line-height: 48px;
+    padding: 5px 32px 0px 26px;
+}
+
+.log-view {
+    background-color: #f5f2f0 !important;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    padding: 1rem 2rem;
+    margin-right: .5rem;
+}
+
+.data-list.row, .log-view {
+  font-size: 13px;
+}
+
+ul.data-list>li {
+  font-size: 14px;
+  margin: 1rem;
+}
+
+.data-list span {
+    margin-left: 1rem;
+}
+
+.time {
+  color: #00788a;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 1rem;
+}
+
+.scrollToTop {
+  -webkit-transition: none !important;
+  transition: none !important;
+}
+
+.new.badge {
+  width: 64px !important;
+  text-align: center;
+}
+
+.time.new.badge {
+  border: 1px solid #d9d9d9;
+  background-color: #f0f0f0 !important;
+  color: #737373;
+}
+
+.nav-info {
+  color: white;
+  display: flex;
+  float: right;
+}
+
+.nav-info div {
+  margin-right: 2rem;
+}
+
+.nav-info span:not(.badge) {
+  display: block;
+  height: 20px;
+  line-height: 30px;
+}
+
+.nav-info span.badge.new {
+  border: 1px solid #ffffff;
+  background-color: white !important;
+  font-weight: 700;
+  margin-top: 13.5px;
+}
+
+.toggle-data {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  color: #737373;
+  font-size: .75rem;
+  line-height: 20px;
+  margin-left: 2rem;
+  margin-bottom: 0.3rem;
+  padding: .1rem .8rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: .1s all ease-in-out;
+}
+
+.toggle-data+.toggle-data {
+  margin-left: .5rem;
+}
+
+.toggle-data:hover {
+  background-color: #f0f0f0;
+}
+
+.editor {
+  max-height: 700px;
+  margin: 0;
+}
+
+.overview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overview table {
+  width: auto;
+}
+
+.overview table td {
+  padding: 6px 5px !important;
+}
+
+.overview table tr td:first-child {
+  min-width: 100px;
+}
+
+
+
+/*************************************************/
+/* Sidenav overrides */
+
+.side-nav {
+  width: 450px;
+}
+
+.side-nav-head span {
+  margin-left: 1.9rem;
+}
+
+.side-nav span.name {
+    width: 275px !important;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side-nav .collapsible-header,
+.side-nav.fixed .collapsible-header {
+    overflow: hidden;
+    padding-left: 30px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side-nav .collapsible-header i,
+.side-nav.fixed .collapsible-header i {
+    margin-right: 15px !important;
+}
+
+.side-nav .collapsible-body li a,
+.side-nav.fixed .collapsible-body li a {
+    padding: 0 15px 0 70px;
+}
+
+.side-nav .collapsible-body li a:hover,
+.side-nav.fixed .collapsible-body li a:hover {
+    background-color: #efefef;
+}
+
+.side-nav .collapsible-body .collapsible-body li a,
+.side-nav.fixed .collapsible-body .collapsible-body li a {
+    padding-left: 85px;
+}
+
+
+
+/*************************************************/
+/* Accordion Overrides */
+
+.collapsible-body {
+    padding: 1rem 0rem 1rem 2rem;
+}
+
+.lean .collapsible-body,
+.collapsible-body,
+.collapsible-body .collapsible-header {
+    background-color: #fff;
+}
+
+.collapsible.lean {
+    box-shadow: none;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.lean .collapsible-header {
+    padding-bottom: 5px;
+}
+
+.lean .collapsible-header h5 {
+    margin: 0;
+}
+
+.lean .collapsible-header h6 {
+    font-size: 1.25rem;
+}
+
+.lean>li {
+    margin-bottom: 20px;
+}
+
+.lean .lean .collapsible-header {
+    border-bottom: 1px solid transparent;
+    transition: all .05s ease-in-out;
+}
+
+.lean .lean .collapsible-header:not(.active):hover {
+    border-bottom: 1px solid #ecebeb;
+}
+
+.lean .lean .collapsible-body:not(.log-view) {
+    border-bottom: 0px;
+    border-left: 1px solid #ddd;
+}
+
+.collapsible-header.active i:not(.state):not(.all):not(.none) {
+    padding-top: 4px;
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.collapsible-header .state {
+    font-size: 1.2rem;
+    padding-top: 4px;
+}
+
+.collapsible-header .title {
+  padding-top: 2px;
+}
+
+
+
+/*************************************************/
+/* Collapsible-header expand/collapse toggle icons */
+
+.collapsible-header .expand {
+  height: 22px;
+  margin-left: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .1s ease-in-out;
+}
+
+.collapsible-header:hover .expand,
+.collapsible-header:hover .toggle-data {
+  opacity: 1;
+  visibility: visible;
+  transition: all .1s ease-in-out;
+}
+
+.expand i {
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1 !important;
+  margin: 0;
+  padding: 0;
+  width: 24px;
+}
+
+.expand i:hover {
+  background-color: #ddd;
+  transition: all .2s ease-in-out;
+}
+
+header .expand {
+  float: right;
+  height: 35px;
+  margin-top: .8rem;
+  margin-right: 1.25rem;
+}
+
+.section {
+  padding: 0 !important;
+}
+
+.section>.collapsible-header {
+  border-width: 1px 1px 1px 1px !important;
+  border-style: solid !important;
+  border-color: #ddd !important;
+  padding-bottom: .85rem;
+}
+
+.section>.collapsible-body {
+  border-width: 0px 1px 1px 1px !important;
+  border-style: solid !important;
+  border-color: #ddd !important;
+  padding-top: 0;
+}
+
+.section>.collapsible-body .collapsible-header {
+  padding-left: 1.5rem;
+}
+
+.section>.collapsible-body .collapsible-header .title {
+  margin-left: .2rem;
+}
+
+.section>.collapsible-body>ul.collapsible {
+  margin-top: 0;
+}
+
+.section>.collapsible-body>.data-list {
+  padding-left: 0.2rem;
+}
+
+.section>.collapsible-body>.collapsible .descr{
+  padding-top: 0.5rem;
+}
+
+.section .collapsible>li:not(.logs) {
+  margin-left: .3rem;
+}
+
+.section>.collapsible-body>.collapsible-body {
+  margin-bottom: 0;
+}
+
+.section>.collapsible-header.active,
+.section>.collapsible-header.active:hover {
+  border-bottom: 1px solid transparent !important;
+}
+
+.section .collapsible-header, .section .collapsible-body {
+  background-color: #fdfdfd;
+}
+
+.lean .section:first-of-type {
+  margin-top: 1rem;
+}
+
+.logs .collapsible-body{
+  padding: 1rem !important;
+}
+
+/*************************************************/
+/* Helpers */
+
+.ml-1 {
+  margin-left: 1rem !important;
+}
+
+.ml-2 {
+  margin-left: 2rem !important;
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
+.mtb-1 {
+  margin: 1rem 0 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.pr-1 {
+  padding-right: 1rem !important;
+}
+
+.d-inline-block {
+  display: inline-block !important;
+}
+
+.display-none {
+  display: none;
+}
+
+.d-flex {
+  display: flex;
+}
+
+
+/*************************************************/
+/* Amcharts */
+
+#chartdiv {
+    width: 100%;
+    height: 350px;
+}
+
+.amcharts-export-menu-top-right {
+    top: 10px;
+    right: 0;
+}
+
+.amcharts-chart-div>svg+a {
+    display: none !important;
+}
+
+.amcharts-pie-slice {
+  transform: scale(1);
+  transform-origin: 50% 50%;
+  transition-duration: 0.3s;
+  transition: all .3s ease-out;
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  cursor: pointer;
+  box-shadow: 0 0 30px 0 #000;
+}
+
+.amcharts-pie-slice:hover {
+  transform: scale(1.1);
+  filter: url(#shadow);
+}
+
+
+
+/*************************************************/
+/* State colors */
+
+
+/* top-nav state badge */
+.nav-info .badge.passed {
+  color: #00AA00 !important;
+}
+.nav-info .badge.passx {
+  color: #00AABB !important;
+}
+.nav-info .badge.failed {
+  color: #FF0000 !important;
+}
+.nav-info .badge.errored {
+  color: #DF01D7 !important;
+}
+.nav-info .badge.aborted {
+  color: #000000 !important;
+}
+.nav-info .badge.blocked {
+  color: #A10A28 !important;
+}
+.nav-info .badge.skipped {
+  color: #6E6E6E !important;
+}
+
+
+/* header state badge */
+.passed.new.badge,
+.passed.collapsible-header .new.badge {
+    background-color: #00AA0066;
+}
+.passx.new.badge,
+.passx.collapsible-header .new.badge {
+    background-color: #00AABB66;
+}
+.failed.new.badge,
+.failed.collapsible-header .new.badge {
+    background-color: #FF000066;
+}
+.errored.new.badge,
+.errored.collapsible-header .new.badge {
+    background-color: #DF01D766;
+}
+.aborted.new.badge,
+.aborted.collapsible-header .new.badge {
+    background-color: #00000066;
+}
+.blocked.new.badge,
+.blocked.collapsible-header .new.badge {
+    background-color: #A10A2866;
+}
+.skipped.new.badge,
+.skipped.collapsible-header .new.badge {
+    background-color: #6E6E6E66;
+}
+.unknown.new.badge,
+.unknown.collapsible-header .new.badge {
+    background-color: #AAAAAA66;
+}
+.other.new.badge,
+.other.collapsible-header .new.badge {
+    background-color: #80cbc466;
+}
+
+
+
+/*************************************************/
+/* Trade colors */
+
+/*
+.passed { background-color: #00AA00; }
+.passx { background-color: #00AABB; }
+.failed { background-color: #FF0000; }
+.errored { background-color: #DF01D7; }
+.aborted { background-color: #000000; }
+.blocked { background-color: #A10A28; }
+.skipped { background-color: #6E6E6E; }
+.unknown { background-color: #AAAAAA; }
+*/
+
+
+
+/*************************************************/
+/* Media styling */
+
+@media only screen and (max-width: 992px) {
+    header,
+    main,
+    footer {
+        padding-left: 0;
+    }
+
+    header .page-title {
+        padding-left: .3rem;
+    }
+
+    main>div.row {
+        margin: 0 2rem;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .container {
+        width: 85%;
+    }
+}
+
+@media only screen and (max-width: 601px) {
+    main>div.row {
+        margin: 0 .5rem;
+    }
+}
+</style>
+
+<body>
+    <header>
+        <div class="navbar-fixed">
+            <nav class="top-nav brown lighten-1">
+                <div class="nav-wrapper">
+                    <a href="#" data-activates="slide-out" class="button-collapse top-nav d-inline-block"><i class="material-icons">menu</i></a>
+                    <a class="ml-2">job</a>
+                    <div class="nav-info">
+                        <div>
+                            <span class="new badge errored" data-badge-caption="">ERRORED</span>
+                        </div>
+                        <div>
+                            <span>2021-02-01</span>
+                            <span>0:00:01</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Collapsible side-nav content -->
+        <ul id="slide-out" class="side-nav">
+            <li class="side-nav-head brown lighten-1 z-depth-1">
+                <span>job</span>
+            </li>
+
+            <!-- Table of Contents -->
+            <li class="no-padding">
+                <ul>
+                    <li><a href="#overview" data-click="true">Overview</a></li>
+                    <li class="no-padding">
+                        <ul class="collapsible ">
+							
+							<li>
+								<a class="collapsible-header"><i class="material-icons">arrow_drop_down</i>Task-1: check_port</a>
+								<div class="collapsible-body">
+									<ul>
+										
+										
+										
+                                        <li><a href="#script-1-test-1" data-click="true"><span class="name">common_setup</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-2" data-click="true"><span class="name">SourceInterface</span><span class="new badge errored" data-badge-caption="">ERRORED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-3" data-click="true"><span class="name">TargetInterface</span><span class="new badge errored" data-badge-caption="">ERRORED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-4" data-click="true"><span class="name">MatchPort</span><span class="new badge errored" data-badge-caption="">ERRORED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-5" data-click="true"><span class="name">common_cleanup</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+									</ul>
+								</div>
+							</li>
+							
+                        </ul>
+                    </li>
+                    <li>
+		                <div class="divider m-0"></div>
+		            </li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+    <main>
+        <div class="container">
+            <div class="row">
+            <div class="col s12">
+                <ul class="collapsible lean" data-collapsible="expandable">
+                	<!-- Overview -->
+                    <li>
+                        <div id="overview" class="collapsible-header active">
+                            <i class="material-icons">arrow_drop_down</i>
+                            <h6>Overview</h6>
+                        </div>
+                        <div class="collapsible-body">
+                            <div class="row d-flex">
+                                <div class="col m12 l5 overview">
+                                	<table>
+                                		<tr>
+                                			<td><b>Job Name:</b></td>
+                                            <td>job</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Start Time:</b></td>
+                                            <td>2021-02-01T20:54:15.207250</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>End Time:</b></td>
+                                            <td>2021-02-01T20:54:16.532630</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Submitter:</b></td>
+                                            <td>safalkhanal</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Run Time:</b></td>
+                                            <td>0:00:01</td>
+										</tr>
+										
+                                		
+                                		
+                                	</table>
+                                </div>
+                                <div class="col m12 l7">
+                                    <div id="chartdiv"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Testscripts -->
+                    
+
+
+<!--Testscript content-->
+<li>
+
+    
+    <div id="script-1" class="collapsible-header errored active">
+    
+        <i class="material-icons">arrow_drop_down</i>
+        <h6>Task-1: check_port</h6> <i class="material-icons">arrow_drop_down</i>
+        
+        <div class="not-collapse expand">
+            <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+            <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+        </div>
+    </div>
+    <div class="collapsible-body pr-1">
+        
+
+        <!-- Testcases -->
+        <ul class="collapsible lean" data-collapsible="expandable">
+            
+            
+            <li>
+                <div id="script-1-test-1" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">common_setup</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">connectdevices</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 112px;">6: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=6.1/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+7: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=6.2/3][pid=25662][pname=Task-1]: |                      Starting subsection connectdevices                      |
+8: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=6.3/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+9: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %SCRIPT-6-INFO: %[pid=25662][pname=Task-1]: Connecting to  devices.....
+10: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %SCRIPT-6-INFO: %[pid=25662][pname=Task-1]: Connection established
+11: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[pid=25662][pname=Task-1]: The result of subsection connectdevices is =&gt; PASSED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-2" class="collapsible-header errored">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">SourceInterface</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header errored">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">source_interface</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 308px;">16: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=16.1/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+17: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=16.2/3][pid=25662][pname=Task-1]: |                      Starting section source_interface                       |
+18: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=16.3/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+19: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.1/16][pid=25662][pname=Task-1]: Caught an exception while executing section source_interface:
+20: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.2/16][pid=25662][pname=Task-1]: Traceback (most recent call last):
+21: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.3/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/check_port.py&#34;, line 89, in source_interface
+22: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.4/16][pid=25662][pname=Task-1]:     df = pd.read_csv(&#39;log/source_up.csv&#39;, header=None)
+23: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.5/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 605, in read_csv
+24: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.6/16][pid=25662][pname=Task-1]:     return _read(filepath_or_buffer, kwds)
+25: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.7/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 457, in _read
+26: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.8/16][pid=25662][pname=Task-1]:     parser = TextFileReader(filepath_or_buffer, **kwds)
+27: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.9/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 814, in __init__
+28: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.10/16][pid=25662][pname=Task-1]:     self._engine = self._make_engine(self.engine)
+29: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.11/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1045, in _make_engine
+30: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.12/16][pid=25662][pname=Task-1]:     return mapping[engine](self.f, **self.options)  # type: ignore[call-arg]
+31: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.13/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1893, in __init__
+32: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.14/16][pid=25662][pname=Task-1]:     self._reader = parsers.TextReader(self.handles.handle, **kwds)
+33: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.15/16][pid=25662][pname=Task-1]:   File &#34;pandas/_libs/parsers.pyx&#34;, line 521, in pandas._libs.parsers.TextReader.__cinit__
+34: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=19.16/16][pid=25662][pname=Task-1]: pandas.errors.EmptyDataError: No columns to parse from file
+35: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[pid=25662][pname=Task-1]: The result of section source_interface is =&gt; ERRORED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-3" class="collapsible-header errored">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">TargetInterface</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header errored">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">target_interface</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 322px;">40: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=40.1/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+41: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=40.2/3][pid=25662][pname=Task-1]: |                      Starting section target_interface                       |
+42: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=40.3/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+43: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %SCRIPT-6-INFO: %[pid=25662][pname=Task-1]: Retrieving unused interface information...
+44: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.1/16][pid=25662][pname=Task-1]: Caught an exception while executing section target_interface:
+45: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.2/16][pid=25662][pname=Task-1]: Traceback (most recent call last):
+46: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.3/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/check_port.py&#34;, line 135, in target_interface
+47: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.4/16][pid=25662][pname=Task-1]:     df = pd.read_csv(&#39;log/target_down.csv&#39;, header=None)
+48: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.5/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 605, in read_csv
+49: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.6/16][pid=25662][pname=Task-1]:     return _read(filepath_or_buffer, kwds)
+50: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.7/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 457, in _read
+51: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.8/16][pid=25662][pname=Task-1]:     parser = TextFileReader(filepath_or_buffer, **kwds)
+52: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.9/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 814, in __init__
+53: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.10/16][pid=25662][pname=Task-1]:     self._engine = self._make_engine(self.engine)
+54: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.11/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1045, in _make_engine
+55: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.12/16][pid=25662][pname=Task-1]:     return mapping[engine](self.f, **self.options)  # type: ignore[call-arg]
+56: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.13/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1893, in __init__
+57: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.14/16][pid=25662][pname=Task-1]:     self._reader = parsers.TextReader(self.handles.handle, **kwds)
+58: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.15/16][pid=25662][pname=Task-1]:   File &#34;pandas/_libs/parsers.pyx&#34;, line 521, in pandas._libs.parsers.TextReader.__cinit__
+59: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=44.16/16][pid=25662][pname=Task-1]: pandas.errors.EmptyDataError: No columns to parse from file
+60: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[pid=25662][pname=Task-1]: The result of section target_interface is =&gt; ERRORED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-4" class="collapsible-header errored">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">MatchPort</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header errored">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">match_port</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">ERRORED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 308px;">65: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=65.1/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+66: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=65.2/3][pid=25662][pname=Task-1]: |                         Starting section match_port                          |
+67: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=65.3/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+68: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.1/16][pid=25662][pname=Task-1]: Caught an exception while executing section match_port:
+69: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.2/16][pid=25662][pname=Task-1]: Traceback (most recent call last):
+70: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.3/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/check_port.py&#34;, line 176, in match_port
+71: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.4/16][pid=25662][pname=Task-1]:     df = pd.read_csv(&#39;log/report_log.csv&#39;, header=None)
+72: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.5/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 605, in read_csv
+73: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.6/16][pid=25662][pname=Task-1]:     return _read(filepath_or_buffer, kwds)
+74: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.7/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 457, in _read
+75: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.8/16][pid=25662][pname=Task-1]:     parser = TextFileReader(filepath_or_buffer, **kwds)
+76: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.9/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 814, in __init__
+77: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.10/16][pid=25662][pname=Task-1]:     self._engine = self._make_engine(self.engine)
+78: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.11/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1045, in _make_engine
+79: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.12/16][pid=25662][pname=Task-1]:     return mapping[engine](self.f, **self.options)  # type: ignore[call-arg]
+80: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.13/16][pid=25662][pname=Task-1]:   File &#34;/Users/safalkhanal/PycharmProjects/SwitchPortConsolidation/venv/lib/python3.8/site-packages/pandas/io/parsers.py&#34;, line 1893, in __init__
+81: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.14/16][pid=25662][pname=Task-1]:     self._reader = parsers.TextReader(self.handles.handle, **kwds)
+82: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.15/16][pid=25662][pname=Task-1]:   File &#34;pandas/_libs/parsers.pyx&#34;, line 521, in pandas._libs.parsers.TextReader.__cinit__
+83: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-3-ERROR: %[part=68.16/16][pid=25662][pname=Task-1]: pandas.errors.EmptyDataError: No columns to parse from file
+84: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[pid=25662][pname=Task-1]: The result of section match_port is =&gt; ERRORED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-5" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">common_cleanup</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">clean_everything</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 98px;">89: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=89.1/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+90: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=89.2/3][pid=25662][pname=Task-1]: |                     Starting subsection clean_everything                     |
+91: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[part=89.3/3][pid=25662][pname=Task-1]: +------------------------------------------------------------------------------+
+92: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %SCRIPT-6-INFO: %[pid=25662][pname=Task-1]: Aetest Common Cleanup 
+93: 192-168-1-108.tpgi.com.au: 2021-02-01T20:54:16: %AETEST-6-INFO: %[pid=25662][pname=Task-1]: The result of subsection clean_everything is =&gt; PASSED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+        </ul>
+    </div>
+</li>
+
+
+                </ul>
+            </div>
+        </div>
+        </div>
+
+        <div class="fixed-action-btn">
+		    <a class="btn-floating btn-large waves-effect waves-light red scrollToTop" style="display: none;">
+		      <i class="large material-icons">arrow_upward</i>
+		    </a>
+		</div>
+    </main>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/pie.js"></script>
+    <!-- <script src="https://www.amcharts.com/lib/3/serial.js"></script> -->
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <!-- AceEditor -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+
+
+    // Strip whitespace from Ace Editor text
+	var p = document.getElementsByClassName("editor");
+	for (i = 0; i < p.length; i++) {
+		p[i].textContent = p[i].textContent.replace(/^\s+/mg, "");
+	};
+
+	// Initialize Ace Editor for all .editor elements
+    var editor;
+    $('.editor').each(function( index ) {
+    	editor = ace.edit(this);
+
+    	editor.setOptions({
+	    	readOnly: true,
+	    	showLineNumbers: false,
+	    	showGutter: false,
+	    	showPrintMargin: false,
+	    });
+		editor.setTheme("ace/theme/chrome");
+    });
+
+
+    // Initialize collapse button and collapsible accordion
+    $(".button-collapse").sideNav();
+    $('.collapsible').collapsible();
+
+
+    // Open parent collapsibles when child collapsible is opened
+    $('[data-click]').on('click', function(e) {
+        var el = $($(this).attr('href'));
+        var oneUp = $(el).closest('.collapsible-body').prev('.collapsible-header');
+        var twoUp = $(oneUp).closest('.collapsible-body').prev('.collapsible-header');
+
+        $(el).trigger('click');
+        $.each([oneUp, twoUp], function(i, val) {
+            if (!$(val).hasClass('active'))
+                $(val).trigger('click');
+        });
+
+        // close sidenav on link click
+        $(this).sideNav('hide');
+    });
+
+
+    // Stop collapse event from actions clicked inside collapsible headers
+    $(".not-collapse").on("click", function(e) { e.stopPropagation(); });
+
+    // Expand or Collapse sections by trigerring a click
+    $('.expand i').on('click', function(e) {
+    	var parent, all, el;
+
+    	el = $(this);
+		parent = el.closest('.collapsible-header');
+		all = parent.next('.collapsible-body')
+				    .find('.collapsible-header');
+
+		if ( el.closest('.side-nav').length !== 0 ) {
+			headers = $('.side-nav .collapsible-header');
+
+			if ( el.hasClass('all') && !headers.hasClass('active'))
+				headers.trigger('click');
+			else if ( el.hasClass('none') && headers.hasClass('active') )
+				headers.trigger('click');
+		}
+
+		// check if the click is to expand all sections
+     	else if ( el.hasClass('all') ) {
+    		all.each( function() {
+    			if ( !$(this).hasClass('active') )
+    				$(this).trigger('click');
+    		});
+    		if ( !parent.hasClass('active') )
+    			parent.trigger('click');
+    	}
+
+    	// check if the click is to collapse all sections
+    	else if ( el.hasClass('none') ) {
+    		all.each( function() {
+    			if ( $(this).hasClass('active') )
+    				$(this).trigger('click');
+    		});
+    		// close the parent collapse section if it's open
+    		if ( parent.hasClass('active') )
+    			parent.trigger('click');
+    	}
+    });
+
+
+	// Toggle scrollToTop button visibility based on scroll
+	$(document).ready(function(){
+		//Check to see if the window is top if not then display button
+		$(window).scroll(function(){
+			if ($(this).scrollTop() > 100)
+				$('.scrollToTop').fadeIn();
+			else
+				$('.scrollToTop').fadeOut();
+		});
+		//Click event to scroll to top
+		$('.scrollToTop').click(function(){
+			$('html, body').animate({scrollTop : 0},800);
+			return false;
+		});
+	});
+
+
+	// Setup custom collapse sections
+	$('[data-function="toggler"]').on('click', function (e) {
+	    var el = $(this);
+	    var header = el.closest('.collapsible-header');
+		var collapse;
+
+		// check the data-target, find that first child, then
+		// assign for toggling
+	    if (el.attr('data-target') == 'descr') {
+	    	if (header.next('.collapsible-body').length !== 0){
+	    		console.log(header.next('.collapsible-body'))
+	    		collapse = header.next('.collapsible-body').find('.descr').first();
+	    	}
+	    	else
+	    		collapse = header.next('.descr');
+	    }
+	    else if (el.attr('data-target') == 'meta')
+	    	collapse = header.next('.collapsible-body').find('.meta').first();
+
+	    if (!header.hasClass('active'))
+	    	header.trigger('click');
+
+     	collapse.slideToggle();
+	});
+
+	// Setup the Pie Chart
+    var chart = AmCharts.makeChart("chartdiv", {
+	  "type": "pie",
+	  "startDuration": 0,
+	   "theme": "light",
+	  "addClassNames": true,
+	  "legend":{
+	   	"position":"right",
+	    "marginRight":100,
+	    "autoMargins":false
+	  },
+	  "innerRadius": "30%",
+	  "defs": {
+	    "filter": [{
+	      "id": "shadow",
+	      "width": "200%",
+	      "height": "200%",
+	      "feOffset": {
+	        "result": "offOut",
+	        "in": "SourceAlpha",
+	        "dx": 0,
+	        "dy": 0
+	      },
+	      "feGaussianBlur": {
+	        "result": "blurOut",
+	        "in": "offOut",
+	        "stdDeviation": 5
+	      },
+	      "feBlend": {
+	        "in": "SourceGraphic",
+	        "in2": "blurOut",
+	        "mode": "normal"
+	      }
+	    }]
+	  },
+	  "dataProvider": [{
+            "status": "passed",
+            "count": 2,
+            "color": "rgb(0, 170, 0)" //#00AA00
+        }, {
+            "status": "passx",
+            "count": 0,
+            "color": "rgb(0, 170, 187)" //#00AABB
+        }, {
+            "status": "failed",
+            "count": 0,
+            "color": "rgb(255, 0, 0)" //#FF0000
+        }, {
+            "status": "errored",
+            "count": 3,
+            "color": "rgb(223, 1, 215)" //#DF01D7
+        }, {
+            "status": "aborted",
+            "count": 0,
+            "color": "rgb(0, 0, 0)" //#000000
+        }, {
+            "status": "blocked",
+            "count": 0,
+            "color": "rgb(161, 10, 40)" //#A10A28
+        }, {
+            "status": "skipped",
+            "count": 0,
+            "color": "rgb(110, 110, 110)" //#6E6E6E
+        }],
+	  "valueField": "count",
+	  "titleField": "status",
+	  "colorField": "color",
+	  "export": {
+	    "enabled": true
+	  }
+	});
+
+	chart.addListener("init", handleInit);
+
+	chart.addListener("rollOverSlice", function(e) {
+	  handleRollOver(e);
+	});
+
+	function handleInit(){
+	  chart.legend.addListener("rollOverItem", handleRollOver);
+	}
+
+	function handleRollOver(e){
+	  var wedge = e.dataItem.wedge.node;
+	  wedge.parentNode.appendChild(wedge);
+	}
+    </script>
+</body>
+
+</html>

@@ -28,7 +28,7 @@ class common_setup(aetest.CommonSetup):
             log.info("Connection established")
         except():
             log.info("Connection rejected")
-
+            exit()
 
 
 class SourceInterface(aetest.Testcase):
@@ -85,10 +85,13 @@ class SourceInterface(aetest.Testcase):
                         row_contents = [device, word, 'up', vlan_value, mac_address]
                         # append all the port data that has status up by calling a class method
                         self.append_list('log/source_up.csv', row_contents)
-        df = pd.read_csv('log/source_up.csv', header=None)
-        df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status', 3: 'VLAN', 4: 'Connected MAC'}, inplace=True)
-        df.to_csv('log/source_up.csv', index=False)  # save to new csv file
         f.close()
+        try:
+            df = pd.read_csv('log/source_up.csv', header=None)
+            df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status', 3: 'VLAN', 4: 'Connected MAC'}, inplace=True)
+            df.to_csv('log/source_up.csv', index=False)  # save to new csv file
+        except pd.errors.EmptyDataError:
+            print("Error!! No data received from switch")
 
     def append_list(self, file, data):
         with open(file, 'a', newline='') as write_obj:
@@ -131,10 +134,10 @@ class TargetInterface(aetest.Testcase):
                         word = line.split(' ')[0]
                         row_contents = [device, word, 'down']
                         self.append_list('log/target_down.csv', row_contents)
+        f.close()
         df = pd.read_csv('log/target_down.csv', header=None)
         df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status'}, inplace=True)
         df.to_csv('log/target_down.csv', index=False)  # save to new csv file
-        f.close()
 
     def append_list(self, file, data):
         with open(file, 'a', newline='') as write_obj:

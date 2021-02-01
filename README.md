@@ -9,6 +9,7 @@ Need to install the following modules
 pip3 install pyats
 pip3 install genie
 pip3 install pyats.contrib
+pip3 install xlrd
 ```
 
 ## Execution

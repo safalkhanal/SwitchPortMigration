@@ -8,33 +8,51 @@ from email.utils import formatdate
 from os.path import basename
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter import messagebox
+import tkinter.scrolledtext as st
+import pandas as pd
 
 
 def generatesourcetestbed():
-    txt_edit.delete("1.0", tk.END)
     filepath = askopenfilename(initialdir=os.getcwd(), filetypes=[("Excel file", "*.xls")])
-    print(filepath)
     if not filepath:
         return
-    try:
-        os.system('pyats create testbed file --path ' + filepath + ' --output sourcetestbed.yml')
-        txt_edit.insert(tk.END, "Testbed file created.")
-        btn_load_target["state"] = "active"
-    except:
-        txt_edit.insert(tk.END, "Tesbed file format is wrong")
+    if len(pd.read_excel(filepath)) == 0:
+        txt_edit.config(state=tk.NORMAL)
+        txt_edit.delete("1.0", tk.END)
+        txt_edit.insert(tk.END, "Source switch testbed file is empty.\n")
+        txt_edit.config(state=tk.DISABLED)
+    else:
+        try:
+            os.system('pyats create testbed file --path ' + filepath + ' --output sourcetestbed.yml')
+            txt_edit.config(state=tk.NORMAL)
+            txt_edit.delete("1.0", tk.END)
+            txt_edit.insert(tk.END, "Source switch testbed file created.\n")
+            txt_edit.config(state=tk.DISABLED)
+            btn_load_target["state"] = "active"
+        except:
+            txt_edit.insert(tk.END, "Testbed file format is wrong\n")
 
 
 def generatetargettestbed():
-    txt_edit.delete("1.0", tk.END)
     filepath = askopenfilename(initialdir=os.getcwd(), filetypes=[("Excel file", "*.xls")])
     if not filepath:
         return
-    try:
-        os.system('pyats create testbed file --path ' + filepath + ' --output targettestbed.yml')
-        txt_edit.insert(tk.END, "Testbed file created.")
-        btn_script1["state"] = "active"
-    except:
-        txt_edit.insert(tk.END, "Tesbed file format is wrong")
+    if not len(pd.read_excel(filepath)) == 0:
+        txt_edit.config(state=tk.NORMAL)
+        txt_edit.delete("1.0", tk.END)
+        txt_edit.insert(tk.END, "Target switch testbed file is empty.\n")
+        txt_edit.config(state=tk.DISABLED)
+        return
+    else:
+        try:
+            os.system('pyats create testbed file --path ' + filepath + ' --output targettestbed.yml')
+            txt_edit.config(state=tk.NORMAL)
+            txt_edit.delete("1.0", tk.END)
+            txt_edit.insert(tk.END, "Target switch testbed file created.\n")
+            txt_edit.config(state=tk.DISABLED)
+            btn_script1["state"] = "active"
+        except:
+            txt_edit.insert(tk.END, "Testbed file format is wrong\n")
 
 
 def run_script1():
@@ -63,7 +81,6 @@ def run_script1():
 
 
 def view_report():
-    txt_edit.delete("1.0", "end")
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
         btn_save["state"] = "active"
@@ -80,7 +97,6 @@ def view_report():
 
 
 def run_targetconfig():
-    txt_edit.delete("1.0", "end")
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
         txt_edit.config(state=tk.NORMAL)
@@ -178,10 +194,10 @@ def viewlog():
 window = tk.Tk()
 window.title("Respiro | Switch port Consolidation")
 
-window.rowconfigure(0, minsize=400, weight=1)
-window.columnconfigure(1, minsize=500, weight=1)
+window.rowconfigure(0, weight=1)
+window.columnconfigure(1, weight=1)
 
-txt_edit = tk.Text(window, bg='white')
+txt_edit = st.ScrolledText(window, bg='white')
 fr_buttons = tk.Frame(window, bg='#b9e2f5')
 txt_edit.config(state=tk.DISABLED)
 btn_load_source = tk.Button(fr_buttons, text="Upload source switch testbed excel file(*.xls)",
