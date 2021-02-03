@@ -1,9 +1,13 @@
+import os
+from os import path
 from csv import writer
 import csv
 import logging
 from pyats import aetest
 from pyats.topology import loader
 import pandas as pd
+import time
+DIR_PATH_NAME = time.strftime("%Y-%m-%d-(%H-%M-%S)")
 
 log = logging.getLogger(__name__)
 source_testbed = loader.load('sourcetestbed.yml')
@@ -29,6 +33,12 @@ class common_setup(aetest.CommonSetup):
         except():
             log.info("Connection rejected")
             exit()
+
+    @aetest.subsection
+    def createlogdir(self):
+        current_dir = os.getcwd()
+        if not path.exists(current_dir+'/log'):
+            os.system('mkdir '+current_dir+'/log')
 
 
 class SourceInterface(aetest.Testcase):
@@ -88,7 +98,7 @@ class SourceInterface(aetest.Testcase):
         f.close()
         try:
             df = pd.read_csv('log/source_up.csv', header=None)
-            df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status', 3: 'VLAN', 4: 'Connected MAC'}, inplace=True)
+            df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status', 3: 'VLAN', 4: 'ConnectedMAC'}, inplace=True)
             df.to_csv('log/source_up.csv', index=False)  # save to new csv file
         except pd.errors.EmptyDataError:
             print("Error!! No data received from switch")
@@ -177,7 +187,7 @@ class MatchPort(aetest.Testcase):
             self.append_list('log/report_log.csv', row_contents)
             a = a + 1
         df = pd.read_csv('log/report_log.csv', header=None)
-        df.rename(columns={0: 'Source Switch', 1: 'Source Port', 2: 'Target Switch', 3: 'Target Port'}, inplace=True)
+        df.rename(columns={0: 'SourceSwitch', 1: 'SourcePort', 2: 'TargetSwitch', 3: 'TargetPort'}, inplace=True)
         df.to_csv('log/report_log.csv', index=False)  # save to new csv file
 
     def append_list(self, file, data):

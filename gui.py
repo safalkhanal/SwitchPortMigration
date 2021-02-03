@@ -1,5 +1,7 @@
 import os
 import smtplib
+import sys
+import subprocess
 import tkinter as tk
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -9,7 +11,11 @@ from os.path import basename
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter import messagebox
 import tkinter.scrolledtext as st
+import tkinter.ttk as ttk
 import pandas as pd
+import csv
+import time
+DIR_PATH = time.strftime("%Y-%m-%d-%H-%M-%S")
 
 
 def generatesourcetestbed():
@@ -37,7 +43,7 @@ def generatetargettestbed():
     filepath = askopenfilename(initialdir=os.getcwd(), filetypes=[("Excel file", "*.xls")])
     if not filepath:
         return
-    if not len(pd.read_excel(filepath)) == 0:
+    if len(pd.read_excel(filepath)) == 0:
         txt_edit.config(state=tk.NORMAL)
         txt_edit.delete("1.0", tk.END)
         txt_edit.insert(tk.END, "Target switch testbed file is empty.\n")
@@ -55,12 +61,22 @@ def generatetargettestbed():
             txt_edit.insert(tk.END, "Testbed file format is wrong\n")
 
 
+# Run pyats job and display the output
 def run_script1():
     txt_edit.config(state=tk.NORMAL)
-    txt_edit.delete("1.0", "end")
+    txt_edit.delete("1.0", tk.END)
+    txt_edit.insert(tk.END, "Script to check switch port is running")
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
         try:
+            btn_save["state"] = "disable"
+            btn_report["state"] = "disable"
+            btn_script3["state"] = "disable"
+            btn_script1["state"] = "disable"
+            btn_email["state"] = "disable"
+            btn_load_target["state"] = "disable"
+            btn_load_source["state"] = "disable"
+            # invoke_process_popen_poll_live('pyats run job job.py --html-logs /logs')
             os.system('pyats run job job.py --html-logs .')
             filepath = "log/source_up.csv"
             report_filepath = "log/report.txt"
@@ -76,8 +92,31 @@ def run_script1():
             btn_email["state"] = "active"
             btn_report["state"] = "active"
             btn_script3["state"] = "active"
+            btn_script1["state"] = "active"
+            btn_load_target["state"] = "active"
+            btn_load_source["state"] = "active"
         except:
             txt_edit.insert(tk.END, "Error occurred while running the script")
+
+
+# Display console output live in tkinter text box (Currently not in use)
+def invoke_process_popen_poll_live(cmd, timeout=None):
+    txt_edit.config(state=tk.NORMAL)
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = ''
+    try:
+        txt_edit.insert(tk.END, "Success!!" + '\n')
+        for line in p.stdout:
+            line = line.decode(encoding=sys.stdout.encoding,
+                               errors='replace' if sys.version_info < (3, 5)
+                               else 'backslashreplace').rstrip()
+            txt_edit.insert(tk.END, line + '\n')
+            output += line
+        retval = p.wait(timeout)
+        return retval, output
+    except:
+        txt_edit.insert(tk.END, "Failed!!" + '\n')
+        txt_edit.insert(tk.END, "There was some error while running the script" + '\n')
 
 
 def view_report():
@@ -88,12 +127,31 @@ def view_report():
         txt_edit.config(state=tk.NORMAL)
         txt_edit.delete("1.0", tk.END)
         filepath = "log/report_log.csv"
+        # generate_csvtable(filepath)
         with open(filepath, "r") as input_file:
             text = input_file.read()
             txt_edit.insert(tk.END, text)
             window.title(f"Switch port Consolidation - {filepath}")
             txt_edit.config(state=tk.DISABLED)
         txt_edit.insert(tk.END, '\n')
+
+# Display CSV file content in a tabular format (In development)
+def generate_csvtable(filepath):
+    header = pd.read_csv(filepath, index_col=0, nrows=0).columns.tolist()
+    txt_edit.pack(side=tk.TOP)
+    tree = ''
+    for items in header:
+        tree = ttk.Treeview(txt_edit, columns=items, selectmode="extended")
+
+    with open(filepath) as f:
+        reader = csv.reader(f, delimiter=',')
+        for row in reader:
+            ss = row[0]
+            sp = row[1]
+            ts = row[2]
+            tp = row[3]
+            tree.insert("", 0, values=(ss, sp, ts, tp))
+    tree.pack()
 
 
 def run_targetconfig():
