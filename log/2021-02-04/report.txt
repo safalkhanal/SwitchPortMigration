@@ -1,4 +1,0 @@
-=======================Source and target matching===================
-(SafalCisco17) FastEthernet0/0  ----->  (SafalCisco6) FastEthernet0/1
-(SafalCisco17) FastEthernet1/0  ----->  (SafalCisco6) FastEthernet1/0
-(SafalCisco17) FastEthernet1/1  ----->  (SafalCisco6) FastEthernet1/1
