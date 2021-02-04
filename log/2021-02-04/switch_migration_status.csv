@@ -1,0 +1,4 @@
+Target Switch,Target Port,Target Port status,Target connected MAC address,Source connected MAC address,Migration Status
+SafalCisco6,FastEthernet0/1,down,,,Failed
+SafalCisco6,FastEthernet1/0,down,,,Failed
+SafalCisco6,FastEthernet1/1,down,,,Failed

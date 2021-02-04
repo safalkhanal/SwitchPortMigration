@@ -7,7 +7,7 @@ from pyats import aetest
 from pyats.topology import loader
 import pandas as pd
 import time
-DIR_PATH_NAME = time.strftime("%Y-%m-%d-(%H-%M-%S)")
+DIR_PATH_NAME = time.strftime("%Y-%m-%d")
 
 log = logging.getLogger(__name__)
 source_testbed = loader.load('sourcetestbed.yml')
@@ -39,29 +39,34 @@ class common_setup(aetest.CommonSetup):
         current_dir = os.getcwd()
         if not path.exists(current_dir+'/log'):
             os.system('mkdir '+current_dir+'/log')
+        if not path.exists(current_dir + '/log/'+DIR_PATH_NAME):
+            os.system('mkdir ' + current_dir + '/log/'+DIR_PATH_NAME)
 
 
 class SourceInterface(aetest.Testcase):
     @aetest.test
     def source_interface(self):
         # opening a file to write the log data
-        f = open("log/source_log.txt", "w")
-        open("log/source_up.csv", "w")
+        f = open("log/"+DIR_PATH_NAME+"/source_log.txt", "w")
+        open("log/"+DIR_PATH_NAME+"/source_up.csv", "w")
         f.write("==========Source port information==========")
         for device in source_testbed.devices:
             device1 = source_testbed.devices[device]
             # Show all the ports of a switch and write in the file
             sourcedevice1 = device1.execute("sh ip int br")
-            f = open("log/source_log.txt", "a")
+            f = open("log/"+DIR_PATH_NAME+"/source_log.txt", "a")
             f.write('\n' + "==========" + device + "==========" + '\n')
             f.write(sourcedevice1)
             log.info("device summery:" + '\n' + "%s" % sourcedevice1)
             f.close()
             # to check up ports for every switch we save log file for every switch to a file
-            temp = open("log/onesource.txt", "w")
+            temp = open("log/"+DIR_PATH_NAME+"/onesource.txt", "w")
+            temp.write("====This is the switch interface log fro the last switch in the provided excel list===\n")
+            temp.write("====This file is used to check the interface status of each switch and select the connected "
+                       "interface===\n")
             temp.write(sourcedevice1)
             temp.close()
-            with open("log/onesource.txt") as file:
+            with open("log/"+DIR_PATH_NAME+"/onesource.txt") as file:
                 for line in file:
                     line = line.rstrip()
                     # check if the line contains 'up'
@@ -69,10 +74,10 @@ class SourceInterface(aetest.Testcase):
                             "Null") == -1:
                         word = line.split(' ')[0]
                         show_vlan = device1.execute("sh interface " + word + " switchport")
-                        temp = open("log/vlan.txt", "w")
+                        temp = open("log/"+DIR_PATH_NAME+"/vlan.txt", "w")
                         temp.write(show_vlan)
                         temp.close()
-                        with open("log/vlan.txt") as vlan_file:
+                        with open("log/"+DIR_PATH_NAME+"/vlan.txt") as vlan_file:
                             for each in vlan_file:
                                 each = each.rstrip()
                                 if "Access Mode VLAN:" in each:
@@ -83,23 +88,23 @@ class SourceInterface(aetest.Testcase):
                                 else:
                                     vlan_value = " "
                         show_mac = device1.execute("show mac interface " + word)
-                        mac_file = open("log/mac_log.txt", "w")
+                        mac_file = open("log/"+DIR_PATH_NAME+"/mac_log.txt", "w")
                         mac_file.write(show_mac + '\n')
                         mac_file.close()
                         mac_address = ''
-                        with open("log/mac_log.txt", 'r') as tac:
+                        with open("log/"+DIR_PATH_NAME+"/mac_log.txt", 'r') as tac:
                             for lines in tac:
                                 if word in lines:
                                     mac_address = lines.split(' ')[0]
 
                         row_contents = [device, word, 'up', vlan_value, mac_address]
                         # append all the port data that has status up by calling a class method
-                        self.append_list('log/source_up.csv', row_contents)
+                        self.append_list('log/'+DIR_PATH_NAME+'/source_up.csv', row_contents)
         f.close()
         try:
-            df = pd.read_csv('log/source_up.csv', header=None)
+            df = pd.read_csv('log/'+DIR_PATH_NAME+'/source_up.csv', header=None)
             df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status', 3: 'VLAN', 4: 'ConnectedMAC'}, inplace=True)
-            df.to_csv('log/source_up.csv', index=False)  # save to new csv file
+            df.to_csv('log/'+DIR_PATH_NAME+'/source_up.csv', index=False)  # save to new csv file
         except pd.errors.EmptyDataError:
             print("Error!! No data received from switch")
 
@@ -112,15 +117,15 @@ class SourceInterface(aetest.Testcase):
 class TargetInterface(aetest.Testcase):
     @aetest.test
     def target_interface(self):
-        open('log/target_down.csv', 'w', newline='')
+        open('log/'+DIR_PATH_NAME+'/target_down.csv', 'w', newline='')
         log.info("Retrieving unused interface information...")
-        f = open("log/target_log.txt", "w")
+        f = open("log/"+DIR_PATH_NAME+"/target_log.txt", "w")
         f.write("==========Target port information==========" + '\n')
         for device in target_testbed.devices:
             device1 = target_testbed.devices[device]
             targetdevice1 = device1.execute("sh ip int br")
             unused_interface = targetdevice1.find("down")
-            f = open("log/target_log.txt", "a")
+            f = open("log/"+DIR_PATH_NAME+"/target_log.txt", "a")
             f.write('\n' + "==========" + device + "==========" + '\n')
             f.write(targetdevice1)
             if unused_interface == -1:
@@ -133,21 +138,24 @@ class TargetInterface(aetest.Testcase):
             log.info("device summery:" + '\n' + "%s" % targetdevice1)
             f.write('\n' + "===========================================")
             f.close()
-            temp = open("log/onetarget.txt", "w")
+            temp = open("log/"+DIR_PATH_NAME+"/onetarget.txt", "w")
+            temp.write("====This is the switch interface log fro the last switch in the provided excel list===\n")
+            temp.write("====This file is used to check the interface status of each switch and select the unused "
+                       "interface===\n")
             temp.write(targetdevice1)
             temp.close()
-            with open("log/onetarget.txt") as file:
+            with open("log/"+DIR_PATH_NAME+"/onetarget.txt") as file:
                 for line in file:
                     line = line.rstrip()
                     if "down" in line and line.find('Vlan') == -1 and line.find("Gig") == -1 and line.find(
                             "Null") == -1:
                         word = line.split(' ')[0]
                         row_contents = [device, word, 'down']
-                        self.append_list('log/target_down.csv', row_contents)
+                        self.append_list('log/'+DIR_PATH_NAME+'/target_down.csv', row_contents)
         f.close()
-        df = pd.read_csv('log/target_down.csv', header=None)
+        df = pd.read_csv('log/'+DIR_PATH_NAME+'/target_down.csv', header=None)
         df.rename(columns={0: 'Switch', 1: 'Port', 2: 'Status'}, inplace=True)
-        df.to_csv('log/target_down.csv', index=False)  # save to new csv file
+        df.to_csv('log/'+DIR_PATH_NAME+'/target_down.csv', index=False)  # save to new csv file
 
     def append_list(self, file, data):
         with open(file, 'a', newline='') as write_obj:
@@ -158,18 +166,18 @@ class TargetInterface(aetest.Testcase):
 class MatchPort(aetest.Testcase):
     @aetest.test
     def match_port(self):
-        report = open("log/report.txt", "w")
-        open("log/report_log.csv", "w", newline='')
+        report = open("log/"+DIR_PATH_NAME+"/report.txt", "w")
+        open("log/"+DIR_PATH_NAME+"/report_log.csv", "w", newline='')
         port = {'source_port': [], 'target_port': [], 'source_switch': [], 'target_switch': []}
 
         length = 0
-        with open("log/source_up.csv", 'r') as s:
+        with open("log/"+DIR_PATH_NAME+"/source_up.csv", 'r') as s:
             data = csv.DictReader(s, delimiter=',')
             for values in data:
                 port["source_switch"].append(values['Switch'])
                 port["source_port"].append(values['Port'])
                 length = length + 1
-        with open("log/target_down.csv", 'r') as t:
+        with open("log/"+DIR_PATH_NAME+"/target_down.csv", 'r') as t:
             data = csv.DictReader(t, delimiter=',')
             for values in data:
                 port["target_switch"].append(values['Switch'])
@@ -184,11 +192,11 @@ class MatchPort(aetest.Testcase):
             # Write in csv file
             row_contents = [port["source_switch"][a], port["source_port"][a], port["target_switch"][a],
                             port['target_port'][a]]
-            self.append_list('log/report_log.csv', row_contents)
+            self.append_list('log/'+DIR_PATH_NAME+'/report_log.csv', row_contents)
             a = a + 1
-        df = pd.read_csv('log/report_log.csv', header=None)
+        df = pd.read_csv('log/'+DIR_PATH_NAME+'/report_log.csv', header=None)
         df.rename(columns={0: 'SourceSwitch', 1: 'SourcePort', 2: 'TargetSwitch', 3: 'TargetPort'}, inplace=True)
-        df.to_csv('log/report_log.csv', index=False)  # save to new csv file
+        df.to_csv('log/'+DIR_PATH_NAME+'/report_log.csv', index=False)  # save to new csv file
 
     def append_list(self, file, data):
         with open(file, 'a', newline='') as write_obj:

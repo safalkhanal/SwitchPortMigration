@@ -1,0 +1,2 @@
+Destination Address  Address Type  VLAN  Destination Port
+-------------------  ------------  ----  --------------------

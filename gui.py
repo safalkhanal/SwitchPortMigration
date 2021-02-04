@@ -15,7 +15,9 @@ import tkinter.ttk as ttk
 import pandas as pd
 import csv
 import time
-DIR_PATH = time.strftime("%Y-%m-%d-%H-%M-%S")
+from os import path
+
+DIR_PATH_NAME = time.strftime("%Y-%m-%d")
 
 
 def generatesourcetestbed():
@@ -63,23 +65,17 @@ def generatetargettestbed():
 
 # Run pyats job and display the output
 def run_script1():
+    txt_edit.insert(tk.END, "Script to check switch port is running")
     txt_edit.config(state=tk.NORMAL)
     txt_edit.delete("1.0", tk.END)
-    txt_edit.insert(tk.END, "Script to check switch port is running")
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
         try:
-            btn_save["state"] = "disable"
-            btn_report["state"] = "disable"
-            btn_script3["state"] = "disable"
-            btn_script1["state"] = "disable"
-            btn_email["state"] = "disable"
-            btn_load_target["state"] = "disable"
-            btn_load_source["state"] = "disable"
+            txt_edit.insert(tk.END, "Script to check switch port is running")
             # invoke_process_popen_poll_live('pyats run job job.py --html-logs /logs')
-            os.system('pyats run job job.py --html-logs .')
-            filepath = "log/source_up.csv"
-            report_filepath = "log/report.txt"
+            os.system('pyats run job job.py --html-logs log/' + DIR_PATH_NAME)
+            filepath = "log/" + DIR_PATH_NAME + "/source_up.csv"
+            report_filepath = "log/" + DIR_PATH_NAME + "/report.txt"
             with open(filepath, "r") as input_file:
                 text = input_file.read()
                 txt_edit.insert(tk.END, text)
@@ -92,9 +88,6 @@ def run_script1():
             btn_email["state"] = "active"
             btn_report["state"] = "active"
             btn_script3["state"] = "active"
-            btn_script1["state"] = "active"
-            btn_load_target["state"] = "active"
-            btn_load_source["state"] = "active"
         except:
             txt_edit.insert(tk.END, "Error occurred while running the script")
 
@@ -122,11 +115,9 @@ def invoke_process_popen_poll_live(cmd, timeout=None):
 def view_report():
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
-        btn_save["state"] = "active"
-        btn_email["state"] = "active"
         txt_edit.config(state=tk.NORMAL)
         txt_edit.delete("1.0", tk.END)
-        filepath = "log/report_log.csv"
+        filepath = "log/" + DIR_PATH_NAME + "/report_log.csv"
         # generate_csvtable(filepath)
         with open(filepath, "r") as input_file:
             text = input_file.read()
@@ -134,6 +125,7 @@ def view_report():
             window.title(f"Switch port Consolidation - {filepath}")
             txt_edit.config(state=tk.DISABLED)
         txt_edit.insert(tk.END, '\n')
+
 
 # Display CSV file content in a tabular format (In development)
 def generate_csvtable(filepath):
@@ -160,7 +152,7 @@ def run_targetconfig():
         txt_edit.config(state=tk.NORMAL)
         txt_edit.delete("1.0", tk.END)
         os.system('python target_config.py')
-        filepath = "log/target_after_configlog.csv"
+        filepath = "log/" + DIR_PATH_NAME + "/switch_migration_status.csv"
         with open(filepath, "r") as input_file:
             text = input_file.read()
             txt_edit.insert(tk.END, text)
@@ -183,8 +175,8 @@ def save_file():
 
 def openNewWindow():
     newWindow = tk.Toplevel(window)
-    newWindow.rowconfigure(0, minsize=80, weight=1)
-    newWindow.columnconfigure(1, minsize=80, weight=1)
+    newWindow.rowconfigure(0, minsize=100, weight=1)
+    newWindow.columnconfigure(1, minsize=100, weight=1)
     newWindow.configure(bg='#ededed')
     newWindow.title("Send email")
     l1 = tk.Label(newWindow, text="Email address: ", bg='#ededed')
@@ -198,7 +190,8 @@ def openNewWindow():
 
 def send_email(e1, newWindow):
     subject = "Switch log file"
-    body = "Hi, \n\nSee the log file from switch attached in this mail. \n\nThank you, \nRespiro team."
+    body = "Hi, \n\nSome of the log files generated during switch port migration are attached in the mail. \n\nThank " \
+           "you, \nRespiro team. "
     sender_email = "respirotest0@gmail.com"
     receiver_email = e1.get()
     password = "respiroemail"
@@ -210,7 +203,14 @@ def send_email(e1, newWindow):
     message["Date"] = formatdate(localtime=True)
 
     message.attach(MIMEText(body, "plain"))
-    filename = {"log/source_log.txt", "TaskLog.job.html", "log/target_log.txt", "log/report.txt"}
+    current_dir = os.getcwd()
+    if path.exists(current_dir + '/log/' + DIR_PATH_NAME + '/switch_migration_status.csv'):
+        filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
+                    "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv",
+                    "log/" + DIR_PATH_NAME + "/switch_migration_status.csv"}
+    else:
+        filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
+                    "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv"}
     for items in filename:
         try:
             with open(items, "rb") as fil:
@@ -252,33 +252,29 @@ def viewlog():
 window = tk.Tk()
 window.title("Respiro | Switch port Consolidation")
 
-window.rowconfigure(0, weight=1)
-window.columnconfigure(1, weight=1)
+window.rowconfigure(0, minsize=500, weight=1)
+window.columnconfigure(1, minsize=800, weight=1)
 
 txt_edit = st.ScrolledText(window, bg='white')
-fr_buttons = tk.Frame(window, bg='#b9e2f5')
+fr_buttons = tk.Frame(window, bg='#7db1c9')
 txt_edit.config(state=tk.DISABLED)
 btn_load_source = tk.Button(fr_buttons, text="Upload source switch testbed excel file(*.xls)",
-                            command=generatesourcetestbed, bg="red")
-btn_load_source.config(fg='#000000')
+                            command=generatesourcetestbed, activebackground="#717982")
 
 btn_load_target = tk.Button(fr_buttons, text="Upload target switch testbed excel file(*.xls)",
-                            command=generatetargettestbed, bg="red")
-btn_load_target.config(fg='#000000')
+                            command=generatetargettestbed, activebackground="#717982")
 
 btn_script1 = tk.Button(fr_buttons, text="Run script to check port status on switches", command=run_script1)
 
-btn_report = tk.Button(fr_buttons, text="View recommended port migration log", command=view_report,
-                       activebackground='#a9a9a9')
+btn_report = tk.Button(fr_buttons, text="View recommended port migration log", command=view_report)
 
-btn_script3 = tk.Button(fr_buttons, text="Run script to verify the port migration", activebackground='#a9a9a9',
-                        command=run_targetconfig)
+btn_script3 = tk.Button(fr_buttons, text="Run script to verify the port migration", command=run_targetconfig)
 
-btn_save = tk.Button(fr_buttons, text="Save As...", command=save_file, activebackground="#a9a9a9")
+btn_save = tk.Button(fr_buttons, text="Save As...", command=save_file)
 
-btn_email = tk.Button(fr_buttons, text="Send log files as email", command=openNewWindow, activebackground="#a9a9a9")
+btn_email = tk.Button(fr_buttons, text="Send log files as email", command=openNewWindow)
 
-btn_logs = tk.Button(fr_buttons, text="View all logs", command=viewlog, activebackground="#a9a9a9")
+btn_logs = tk.Button(fr_buttons, text="View all logs", command=viewlog)
 
 btn_load_source.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 btn_load_target.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
