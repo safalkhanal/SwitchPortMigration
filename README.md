@@ -5,7 +5,7 @@ PyAts is used to connect to devices and run different configuration to check swi
 
 ## Requirement
 
-Need to install the following modules
+The following modules needs to be installed to run the project smoothly. 
 
 ```bash
 pip3 install pyats
