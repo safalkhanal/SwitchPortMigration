@@ -231,17 +231,41 @@ class MatchPort(aetest.Testcase):
                 with open("log/" + DIR_PATH_NAME + "/target_down.csv", 'r') as t:
                     target_data = csv.DictReader(t, delimiter=',')
                     for target_values in target_data:
-                        # check if both source and target port are in same VLAN and check if the target port has not
-                        # been used in matching before by setting a flag
                         exists = 0
                         # Concat switch and port to check if it has already been matched
-                        value = target_values['Switch'] + target_values['Port']
+                        source_concat_value = source_values['Switch'] + source_values['Port']
+                        target_concat_value = target_values['Switch'] + target_values['Port']
                         # check the temporary matched list of switch + port with current value of target switch and port
                         for items in temp:
-                            if value == items:
+                            if source_concat_value == items or target_concat_value == items:
                                 exists = 1
                         # If the port is unmatched and has same vlan as source, it is matched and append to a new list
                         if exists == 0 and source_values['VLAN'] == target_values['VLAN']:
+                            temp.append(source_values['Switch'] + source_values['Port'])
+                            temp.append(target_values['Switch'] + target_values['Port'])
+                            port["source_switch"].append(source_values['Switch'])
+                            port["source_port"].append(source_values['Port'])
+                            port["target_switch"].append(target_values['Switch'])
+                            port["target_port"].append(target_values['Port'])
+                            port["source_vlan"].append(source_values['VLAN'])
+                            port["target_vlan"].append(target_values['VLAN'])
+                            length = length + 1
+                            break
+                with open("log/" + DIR_PATH_NAME + "/target_down.csv", 'r') as t:
+                    target_data = csv.DictReader(t, delimiter=',')
+                    # Loop to match ports if vlan does not match
+                    for target_values in target_data:
+                        exists = 0
+                        # Concat switch and port to check if it has already been matched
+                        source_concat_value = source_values['Switch'] + source_values['Port']
+                        target_concat_value = target_values['Switch'] + target_values['Port']
+                        # check the temporary matched list of switch + port with current value of target switch and port
+                        for items in temp:
+                            if source_concat_value == items or target_concat_value == items:
+                                exists = 1
+                        # Here we only check is the current target switch and port is in the temp list of matched ports
+                        if exists == 0:
+                            temp.append(source_values['Switch'] + source_values['Port'])
                             temp.append(target_values['Switch'] + target_values['Port'])
                             port["source_switch"].append(source_values['Switch'])
                             port["source_port"].append(source_values['Port'])
