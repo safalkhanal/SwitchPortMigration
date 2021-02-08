@@ -1,5 +1,5 @@
 # Switch port Consolidation
-This is a PyATS test scripts to migrate source switch port to target switch port
+This is a PyATS test scripts to recommend source switch port to target switch port migration and later test the status of port migration
 
 ## Requirement
 
