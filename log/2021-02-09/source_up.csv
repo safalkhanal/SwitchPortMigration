@@ -1,4 +1,0 @@
-Switch,Port,Status,VLAN,ConnectedMAC
-SafalCisco17,FastEthernet0/0,up, ,
-SafalCisco17,FastEthernet1/0,up,1,
-SafalCisco17,FastEthernet1/1,up,1,
