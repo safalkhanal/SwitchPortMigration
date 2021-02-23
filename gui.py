@@ -82,7 +82,6 @@ def generatetargettestbed():
 
 # Run pyats job and display the output
 def run_script1():
-    txt_edit.insert(tk.END, "Script to check switch port is running")
     txt_edit.config(state=tk.NORMAL)
     txt_edit.delete("1.0", tk.END)
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
@@ -109,24 +108,24 @@ def run_script1():
             txt_edit.insert(tk.END, "Error occurred while running the script")
 
 
-# Display console output live in tkinter text box (Currently not in use)
-def invoke_process_popen_poll_live(cmd, timeout=None):
-    txt_edit.config(state=tk.NORMAL)
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    output = ''
-    try:
-        txt_edit.insert(tk.END, "Success!!" + '\n')
-        for line in p.stdout:
-            line = line.decode(encoding=sys.stdout.encoding,
-                               errors='replace' if sys.version_info < (3, 5)
-                               else 'backslashreplace').rstrip()
-            txt_edit.insert(tk.END, line + '\n')
-            output += line
-        retval = p.wait(timeout)
-        return retval, output
-    except:
-        txt_edit.insert(tk.END, "Failed!!" + '\n')
-        txt_edit.insert(tk.END, "There was some error while running the script" + '\n')
+# Display console output live in tkinter text box (Currently not in use- In development)
+# def invoke_process_popen_poll_live(cmd, timeout=None):
+#     txt_edit.config(state=tk.NORMAL)
+#     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#     output = ''
+#     try:
+#         txt_edit.insert(tk.END, "Success!!" + '\n')
+#         for line in p.stdout:
+#             line = line.decode(encoding=sys.stdout.encoding,
+#                                errors='replace' if sys.version_info < (3, 5)
+#                                else 'backslashreplace').rstrip()
+#             txt_edit.insert(tk.END, line + '\n')
+#             output += line
+#         retval = p.wait(timeout)
+#         return retval, output
+#     except:
+#         txt_edit.insert(tk.END, "Failed!!" + '\n')
+#         txt_edit.insert(tk.END, "There was some error while running the script" + '\n')
 
 
 def view_report():
@@ -145,22 +144,22 @@ def view_report():
 
 
 # Display CSV file content in a tabular format (In development)
-def generate_csvtable(filepath):
-    header = pd.read_csv(filepath, index_col=0, nrows=0).columns.tolist()
-    txt_edit.pack(side=tk.TOP)
-    tree = ''
-    for items in header:
-        tree = ttk.Treeview(txt_edit, columns=items, selectmode="extended")
-
-    with open(filepath) as f:
-        reader = csv.reader(f, delimiter=',')
-        for row in reader:
-            ss = row[0]
-            sp = row[1]
-            ts = row[2]
-            tp = row[3]
-            tree.insert("", 0, values=(ss, sp, ts, tp))
-    tree.pack()
+# def generate_csvtable(filepath):
+#     header = pd.read_csv(filepath, index_col=0, nrows=0).columns.tolist()
+#     txt_edit.pack(side=tk.TOP)
+#     tree = ''
+#     for items in header:
+#         tree = ttk.Treeview(txt_edit, columns=items, selectmode="extended")
+#
+#     with open(filepath) as f:
+#         reader = csv.reader(f, delimiter=',')
+#         for row in reader:
+#             ss = row[0]
+#             sp = row[1]
+#             ts = row[2]
+#             tp = row[3]
+#             tree.insert("", 0, values=(ss, sp, ts, tp))
+#     tree.pack()
 
 
 def run_targetconfig():
@@ -224,10 +223,11 @@ def send_email(e1, newWindow):
     if path.exists(current_dir + '/log/' + DIR_PATH_NAME + '/switch_migration_status.csv'):
         filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
                     "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv",
-                    "log/" + DIR_PATH_NAME + "/switch_migration_status.csv"}
+                    "log/" + DIR_PATH_NAME + "/switch_migration_status.csv", "log/" + DIR_PATH_NAME + "/report.txt"}
     else:
         filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
-                    "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv"}
+                    "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv",
+                    "log/" + DIR_PATH_NAME + "/report.txt"}
     for items in filename:
         try:
             with open(items, "rb") as fil:
