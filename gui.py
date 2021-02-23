@@ -1,3 +1,12 @@
+__author__ = "Safal Khanal"
+__copyright__ = "Copyright 2021"
+__credits__ = ["Safal Khanal"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Safal Khanal"
+__email__ = "skhanal@respiro.com.au"
+__status__ = "In Development"
+
 import os
 import smtplib
 import sys
@@ -12,10 +21,18 @@ from tkinter.filedialog import asksaveasfilename, askopenfilename
 from tkinter import messagebox
 import tkinter.scrolledtext as st
 import tkinter.ttk as ttk
-import pandas as pd
 import csv
 import time
 from os import path
+os.system('pip3 install xlrd')
+os.system('pip3 install genie')
+os.system('pip3 install pyats')
+os.system('pip3 install pyats.contrib')
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    os.system('pip3 install pandas')
+    import pandas as pd
 
 DIR_PATH_NAME = time.strftime("%Y-%m-%d")
 

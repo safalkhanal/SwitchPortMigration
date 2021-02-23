@@ -1,0 +1,22 @@
+====This is the switch interface log fro the last switch in the provided excel list===
+====This file is used to check the interface status of each switch and select the unused interface===
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.1.171   YES NVRAM  up                    up      
+FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+FastEthernet1/0            unassigned      YES unset  administratively down down    
+FastEthernet1/1            unassigned      YES unset  administratively down down    
+FastEthernet1/2            unassigned      YES unset  administratively down down    
+FastEthernet1/3            unassigned      YES unset  administratively down down    
+FastEthernet1/4            unassigned      YES unset  administratively down down    
+FastEthernet1/5            unassigned      YES unset  administratively down down    
+FastEthernet1/6            unassigned      YES unset  administratively down down    
+FastEthernet1/7            unassigned      YES unset  administratively down down    
+FastEthernet1/8            unassigned      YES unset  administratively down down    
+FastEthernet1/9            unassigned      YES unset  administratively down down    
+FastEthernet1/10           unassigned      YES unset  administratively down down    
+FastEthernet1/11           unassigned      YES unset  administratively down down    
+FastEthernet1/12           unassigned      YES unset  administratively down down    
+FastEthernet1/13           unassigned      YES unset  administratively down down    
+FastEthernet1/14           unassigned      YES unset  administratively down down    
+FastEthernet1/15           unassigned      YES unset  administratively down down    
+Vlan1                      unassigned      YES NVRAM  up                    down

@@ -1,3 +1,12 @@
+__author__ = "Safal Khanal"
+__copyright__ = "Copyright 2021"
+__credits__ = ["Safal Khanal"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Safal Khanal"
+__email__ = "skhanal@respiro.com.au"
+__status__ = "In Development"
+
 import os
 from os import path
 from csv import writer
@@ -5,8 +14,8 @@ import csv
 import logging
 from pyats import aetest
 from pyats.topology import loader
-import pandas as pd
 import time
+import pandas as pd
 
 DIR_PATH_NAME = time.strftime("%Y-%m-%d")
 

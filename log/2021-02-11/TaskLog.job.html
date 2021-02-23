@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LogViewer</title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="styles.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>job</title>
+</head>
+<style type="text/css">
+    /*************************************************/
+/* Main element styling */
+
+body,
+.side-nav.fixed,
+.side-nav.fixed .collapsible li,
+.collapsible-header {
+    background-color: #fcfcfc;
+}
+
+nav, nav .nav-wrapper i, .side-nav-head {
+    height: 50px;
+    line-height: 50px !important;
+}
+
+header, main {
+    /*padding-left: 300px;*/
+}
+.side-nav-head {
+    color: #fff;
+}
+
+main>.container {
+    padding-top: 5px;
+}
+
+main>div.row {
+    margin: 0 2rem;
+    padding-top: 1.6rem;
+}
+
+h6 {
+  margin: 0;
+  padding-top: 2px;
+}
+
+.container {
+  max-width: none !important;
+}
+
+.button-collapse, .page-title, .search {
+  display: inline-block;
+}
+
+.nav-title {
+    color: rgba(0, 0, 0, 0.87);
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 400;
+    height: 48px;
+    line-height: 48px;
+    padding: 5px 32px 0px 26px;
+}
+
+.log-view {
+    background-color: #f5f2f0 !important;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    padding: 1rem 2rem;
+    margin-right: .5rem;
+}
+
+.data-list.row, .log-view {
+  font-size: 13px;
+}
+
+ul.data-list>li {
+  font-size: 14px;
+  margin: 1rem;
+}
+
+.data-list span {
+    margin-left: 1rem;
+}
+
+.time {
+  color: #00788a;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 1rem;
+}
+
+.scrollToTop {
+  -webkit-transition: none !important;
+  transition: none !important;
+}
+
+.new.badge {
+  width: 64px !important;
+  text-align: center;
+}
+
+.time.new.badge {
+  border: 1px solid #d9d9d9;
+  background-color: #f0f0f0 !important;
+  color: #737373;
+}
+
+.nav-info {
+  color: white;
+  display: flex;
+  float: right;
+}
+
+.nav-info div {
+  margin-right: 2rem;
+}
+
+.nav-info span:not(.badge) {
+  display: block;
+  height: 20px;
+  line-height: 30px;
+}
+
+.nav-info span.badge.new {
+  border: 1px solid #ffffff;
+  background-color: white !important;
+  font-weight: 700;
+  margin-top: 13.5px;
+}
+
+.toggle-data {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  color: #737373;
+  font-size: .75rem;
+  line-height: 20px;
+  margin-left: 2rem;
+  margin-bottom: 0.3rem;
+  padding: .1rem .8rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: .1s all ease-in-out;
+}
+
+.toggle-data+.toggle-data {
+  margin-left: .5rem;
+}
+
+.toggle-data:hover {
+  background-color: #f0f0f0;
+}
+
+.editor {
+  max-height: 700px;
+  margin: 0;
+}
+
+.overview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overview table {
+  width: auto;
+}
+
+.overview table td {
+  padding: 6px 5px !important;
+}
+
+.overview table tr td:first-child {
+  min-width: 100px;
+}
+
+
+
+/*************************************************/
+/* Sidenav overrides */
+
+.side-nav {
+  width: 450px;
+}
+
+.side-nav-head span {
+  margin-left: 1.9rem;
+}
+
+.side-nav span.name {
+    width: 275px !important;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side-nav .collapsible-header,
+.side-nav.fixed .collapsible-header {
+    overflow: hidden;
+    padding-left: 30px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side-nav .collapsible-header i,
+.side-nav.fixed .collapsible-header i {
+    margin-right: 15px !important;
+}
+
+.side-nav .collapsible-body li a,
+.side-nav.fixed .collapsible-body li a {
+    padding: 0 15px 0 70px;
+}
+
+.side-nav .collapsible-body li a:hover,
+.side-nav.fixed .collapsible-body li a:hover {
+    background-color: #efefef;
+}
+
+.side-nav .collapsible-body .collapsible-body li a,
+.side-nav.fixed .collapsible-body .collapsible-body li a {
+    padding-left: 85px;
+}
+
+
+
+/*************************************************/
+/* Accordion Overrides */
+
+.collapsible-body {
+    padding: 1rem 0rem 1rem 2rem;
+}
+
+.lean .collapsible-body,
+.collapsible-body,
+.collapsible-body .collapsible-header {
+    background-color: #fff;
+}
+
+.collapsible.lean {
+    box-shadow: none;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.lean .collapsible-header {
+    padding-bottom: 5px;
+}
+
+.lean .collapsible-header h5 {
+    margin: 0;
+}
+
+.lean .collapsible-header h6 {
+    font-size: 1.25rem;
+}
+
+.lean>li {
+    margin-bottom: 20px;
+}
+
+.lean .lean .collapsible-header {
+    border-bottom: 1px solid transparent;
+    transition: all .05s ease-in-out;
+}
+
+.lean .lean .collapsible-header:not(.active):hover {
+    border-bottom: 1px solid #ecebeb;
+}
+
+.lean .lean .collapsible-body:not(.log-view) {
+    border-bottom: 0px;
+    border-left: 1px solid #ddd;
+}
+
+.collapsible-header.active i:not(.state):not(.all):not(.none) {
+    padding-top: 4px;
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.collapsible-header .state {
+    font-size: 1.2rem;
+    padding-top: 4px;
+}
+
+.collapsible-header .title {
+  padding-top: 2px;
+}
+
+
+
+/*************************************************/
+/* Collapsible-header expand/collapse toggle icons */
+
+.collapsible-header .expand {
+  height: 22px;
+  margin-left: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .1s ease-in-out;
+}
+
+.collapsible-header:hover .expand,
+.collapsible-header:hover .toggle-data {
+  opacity: 1;
+  visibility: visible;
+  transition: all .1s ease-in-out;
+}
+
+.expand i {
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1 !important;
+  margin: 0;
+  padding: 0;
+  width: 24px;
+}
+
+.expand i:hover {
+  background-color: #ddd;
+  transition: all .2s ease-in-out;
+}
+
+header .expand {
+  float: right;
+  height: 35px;
+  margin-top: .8rem;
+  margin-right: 1.25rem;
+}
+
+.section {
+  padding: 0 !important;
+}
+
+.section>.collapsible-header {
+  border-width: 1px 1px 1px 1px !important;
+  border-style: solid !important;
+  border-color: #ddd !important;
+  padding-bottom: .85rem;
+}
+
+.section>.collapsible-body {
+  border-width: 0px 1px 1px 1px !important;
+  border-style: solid !important;
+  border-color: #ddd !important;
+  padding-top: 0;
+}
+
+.section>.collapsible-body .collapsible-header {
+  padding-left: 1.5rem;
+}
+
+.section>.collapsible-body .collapsible-header .title {
+  margin-left: .2rem;
+}
+
+.section>.collapsible-body>ul.collapsible {
+  margin-top: 0;
+}
+
+.section>.collapsible-body>.data-list {
+  padding-left: 0.2rem;
+}
+
+.section>.collapsible-body>.collapsible .descr{
+  padding-top: 0.5rem;
+}
+
+.section .collapsible>li:not(.logs) {
+  margin-left: .3rem;
+}
+
+.section>.collapsible-body>.collapsible-body {
+  margin-bottom: 0;
+}
+
+.section>.collapsible-header.active,
+.section>.collapsible-header.active:hover {
+  border-bottom: 1px solid transparent !important;
+}
+
+.section .collapsible-header, .section .collapsible-body {
+  background-color: #fdfdfd;
+}
+
+.lean .section:first-of-type {
+  margin-top: 1rem;
+}
+
+.logs .collapsible-body{
+  padding: 1rem !important;
+}
+
+/*************************************************/
+/* Helpers */
+
+.ml-1 {
+  margin-left: 1rem !important;
+}
+
+.ml-2 {
+  margin-left: 2rem !important;
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
+.mtb-1 {
+  margin: 1rem 0 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.pr-1 {
+  padding-right: 1rem !important;
+}
+
+.d-inline-block {
+  display: inline-block !important;
+}
+
+.display-none {
+  display: none;
+}
+
+.d-flex {
+  display: flex;
+}
+
+
+/*************************************************/
+/* Amcharts */
+
+#chartdiv {
+    width: 100%;
+    height: 350px;
+}
+
+.amcharts-export-menu-top-right {
+    top: 10px;
+    right: 0;
+}
+
+.amcharts-chart-div>svg+a {
+    display: none !important;
+}
+
+.amcharts-pie-slice {
+  transform: scale(1);
+  transform-origin: 50% 50%;
+  transition-duration: 0.3s;
+  transition: all .3s ease-out;
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  cursor: pointer;
+  box-shadow: 0 0 30px 0 #000;
+}
+
+.amcharts-pie-slice:hover {
+  transform: scale(1.1);
+  filter: url(#shadow);
+}
+
+
+
+/*************************************************/
+/* State colors */
+
+
+/* top-nav state badge */
+.nav-info .badge.passed {
+  color: #00AA00 !important;
+}
+.nav-info .badge.passx {
+  color: #00AABB !important;
+}
+.nav-info .badge.failed {
+  color: #FF0000 !important;
+}
+.nav-info .badge.errored {
+  color: #DF01D7 !important;
+}
+.nav-info .badge.aborted {
+  color: #000000 !important;
+}
+.nav-info .badge.blocked {
+  color: #A10A28 !important;
+}
+.nav-info .badge.skipped {
+  color: #6E6E6E !important;
+}
+
+
+/* header state badge */
+.passed.new.badge,
+.passed.collapsible-header .new.badge {
+    background-color: #00AA0066;
+}
+.passx.new.badge,
+.passx.collapsible-header .new.badge {
+    background-color: #00AABB66;
+}
+.failed.new.badge,
+.failed.collapsible-header .new.badge {
+    background-color: #FF000066;
+}
+.errored.new.badge,
+.errored.collapsible-header .new.badge {
+    background-color: #DF01D766;
+}
+.aborted.new.badge,
+.aborted.collapsible-header .new.badge {
+    background-color: #00000066;
+}
+.blocked.new.badge,
+.blocked.collapsible-header .new.badge {
+    background-color: #A10A2866;
+}
+.skipped.new.badge,
+.skipped.collapsible-header .new.badge {
+    background-color: #6E6E6E66;
+}
+.unknown.new.badge,
+.unknown.collapsible-header .new.badge {
+    background-color: #AAAAAA66;
+}
+.other.new.badge,
+.other.collapsible-header .new.badge {
+    background-color: #80cbc466;
+}
+
+
+
+/*************************************************/
+/* Trade colors */
+
+/*
+.passed { background-color: #00AA00; }
+.passx { background-color: #00AABB; }
+.failed { background-color: #FF0000; }
+.errored { background-color: #DF01D7; }
+.aborted { background-color: #000000; }
+.blocked { background-color: #A10A28; }
+.skipped { background-color: #6E6E6E; }
+.unknown { background-color: #AAAAAA; }
+*/
+
+
+
+/*************************************************/
+/* Media styling */
+
+@media only screen and (max-width: 992px) {
+    header,
+    main,
+    footer {
+        padding-left: 0;
+    }
+
+    header .page-title {
+        padding-left: .3rem;
+    }
+
+    main>div.row {
+        margin: 0 2rem;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .container {
+        width: 85%;
+    }
+}
+
+@media only screen and (max-width: 601px) {
+    main>div.row {
+        margin: 0 .5rem;
+    }
+}
+</style>
+
+<body>
+    <header>
+        <div class="navbar-fixed">
+            <nav class="top-nav brown lighten-1">
+                <div class="nav-wrapper">
+                    <a href="#" data-activates="slide-out" class="button-collapse top-nav d-inline-block"><i class="material-icons">menu</i></a>
+                    <a class="ml-2">job</a>
+                    <div class="nav-info">
+                        <div>
+                            <span class="new badge passed" data-badge-caption="">PASSED</span>
+                        </div>
+                        <div>
+                            <span>2021-02-11</span>
+                            <span>0:00:57</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Collapsible side-nav content -->
+        <ul id="slide-out" class="side-nav">
+            <li class="side-nav-head brown lighten-1 z-depth-1">
+                <span>job</span>
+            </li>
+
+            <!-- Table of Contents -->
+            <li class="no-padding">
+                <ul>
+                    <li><a href="#overview" data-click="true">Overview</a></li>
+                    <li class="no-padding">
+                        <ul class="collapsible ">
+							
+							<li>
+								<a class="collapsible-header"><i class="material-icons">arrow_drop_down</i>Task-1: check_port</a>
+								<div class="collapsible-body">
+									<ul>
+										
+										
+										
+                                        <li><a href="#script-1-test-1" data-click="true"><span class="name">common_setup</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-2" data-click="true"><span class="name">SourceInterface</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-3" data-click="true"><span class="name">TargetInterface</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-4" data-click="true"><span class="name">MatchPort</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+										
+                                        <li><a href="#script-1-test-5" data-click="true"><span class="name">common_cleanup</span><span class="new badge passed" data-badge-caption="">PASSED</span></a></li>
+										
+									</ul>
+								</div>
+							</li>
+							
+                        </ul>
+                    </li>
+                    <li>
+		                <div class="divider m-0"></div>
+		            </li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+    <main>
+        <div class="container">
+            <div class="row">
+            <div class="col s12">
+                <ul class="collapsible lean" data-collapsible="expandable">
+                	<!-- Overview -->
+                    <li>
+                        <div id="overview" class="collapsible-header active">
+                            <i class="material-icons">arrow_drop_down</i>
+                            <h6>Overview</h6>
+                        </div>
+                        <div class="collapsible-body">
+                            <div class="row d-flex">
+                                <div class="col m12 l5 overview">
+                                	<table>
+                                		<tr>
+                                			<td><b>Job Name:</b></td>
+                                            <td>job</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Start Time:</b></td>
+                                            <td>2021-02-11T15:08:45.347547</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>End Time:</b></td>
+                                            <td>2021-02-11T15:09:43.328293</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Submitter:</b></td>
+                                            <td>safalkhanal</td>
+                                		</tr>
+                                		<tr>
+                                			<td><b>Run Time:</b></td>
+                                            <td>0:00:57</td>
+										</tr>
+										
+                                		
+                                		
+                                	</table>
+                                </div>
+                                <div class="col m12 l7">
+                                    <div id="chartdiv"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Testscripts -->
+                    
+
+
+<!--Testscript content-->
+<li>
+
+    
+    <div id="script-1" class="collapsible-header passed active">
+    
+        <i class="material-icons">arrow_drop_down</i>
+        <h6>Task-1: check_port</h6> <i class="material-icons">arrow_drop_down</i>
+        
+        <div class="not-collapse expand">
+            <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+            <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+        </div>
+    </div>
+    <div class="collapsible-body pr-1">
+        
+
+        <!-- Testcases -->
+        <ul class="collapsible lean" data-collapsible="expandable">
+            
+            
+            <li>
+                <div id="script-1-test-1" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">common_setup</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:10</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">connectdevices</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:10</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 4424px;">8: Safals-MacBook.local: 2021-02-11T15:08:46: %AETEST-6-INFO: %[part=8.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+9: Safals-MacBook.local: 2021-02-11T15:08:46: %AETEST-6-INFO: %[part=8.2/3][pid=2015][pname=Task-1]: |                      Starting subsection connectdevices                      |
+10: Safals-MacBook.local: 2021-02-11T15:08:46: %AETEST-6-INFO: %[part=8.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+11: Safals-MacBook.local: 2021-02-11T15:08:46: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: Connecting to  devices.....
+12: Safals-MacBook.local: 2021-02-11T15:08:46: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17 logfile /Users/safalkhanal/.pyats/runinfo/job.2021Feb11_15:08:41.379022/SafalCisco17-default-1613016526.log +++
+13: Safals-MacBook.local: 2021-02-11T15:08:46: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ Unicon plugin ios +++
+Trying 192.168.1.246...
+
+15: Safals-MacBook.local: 2021-02-11T15:08:46: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ connection to spawn: telnet 192.168.1.246 32785, id: 140212709034352 +++
+16: Safals-MacBook.local: 2021-02-11T15:08:46: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: connection to SafalCisco17
+Connected to 192.168.1.246.
+Escape character is &#39;^]&#39;.
+Connected to Dynamips VM &#34;SafalCisco17&#34; (ID 17, type c3725) - Console port
+Press ENTER to get the prompt.
+com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Cisco 3725 (R7000) processor (revision 0.1) with 249856K/12288K bytes of memory.
+Processor board ID FTX0945W0MY
+R7000 CPU at 240MHz, Implementation 39, Rev 2.1, 256KB L2, 512KB L3 Cache
+18 FastEthernet interfaces
+DRAM configuration is 64 bits wide with parity enabled.
+55K bytes of NVRAM.
+131072K bytes of ATA System CompactFlash (Read/Write)
+131072K bytes of ATA Slot0 CompactFlash (Read/Write)
+
+Configuration register is 0x2102
+
+SafalCisco17#config term
+Enter configuration commands, one per line.  End with CNTL/Z.
+SafalCisco17(config)#no logging console
+SafalCisco17(config)#line console 0
+SafalCisco17(config-line)#exec-timeout 0
+SafalCisco17(config-line)#end
+SafalCisco17#sh ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.1.170   YES NVRAM  up                    up      
+FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+FastEthernet1/0            unassigned      YES unset  up                    up      
+FastEthernet1/1            unassigned      YES unset  up                    up      
+FastEthernet1/2            unassigned      YES unset  administratively down down    
+FastEthernet1/3            unassigned      YES unset  administratively down down    
+FastEthernet1/4            unassigned      YES unset  administratively down down    
+FastEthernet1/5            unassigned      YES unset  administratively down down    
+FastEthernet1/6            unassigned      YES unset  administratively down down    
+FastEthernet1/7            unassigned      YES unset  administratively down down    
+FastEthernet1/8            unassigned      YES unset  administratively down down    
+FastEthernet1/9            unassigned      YES unset  administratively down down    
+FastEthernet1/10           unassigned      YES unset  administratively down down    
+FastEthernet1/11           unassigned      YES unset  administratively down down    
+FastEthernet1/12           unassigned      YES unset  administratively down down    
+FastEthernet1/13           unassigned      YES unset  administratively down down    
+FastEthernet1/14           unassigned      YES unset  administratively down down    
+FastEthernet1/15           unassigned      YES unset  administratively down down    
+Vlan1                      1.1.1.1         YES manual up                    up      
+SafalCisco17#sh interface FastEthernet0/0 switchport
+% Fa0/0 is not a switchable port
+SafalCisco17#show mac interface FastEthernet0/0
+SafalCisco17#sh interface FastEthernet1/0 switchport
+Name: Fa1/0
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: static access
+Administrative Trunking Encapsulation: dot1q
+Operational Trunking Encapsulation: native
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: 1
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco17#show mac interface FastEthernet1/0
+Destination Address  Address Type  VLAN  Destination Port
+-------------------  ------------  ----  --------------------
+
+SafalCisco17#sh interface FastEthernet1/1 switchport
+Name: Fa1/1
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: static access
+Administrative Trunking Encapsulation: dot1q
+Operational Trunking Encapsulation: native
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: 1
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco17#show mac interface FastEthernet1/1
+Destination Address  Address Type  VLAN  Destination Port
+-------------------  ------------  ----  --------------------
+
+SafalCisco17#]0;SafalCisco17
+SafalCisco17#
+24: Safals-MacBook.local: 2021-02-11T15:08:48: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ initializing handle +++
+25: Safals-MacBook.local: 2021-02-11T15:08:48: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;term length 0&#39; +++
+term length 0
+SafalCisco17#
+29: Safals-MacBook.local: 2021-02-11T15:08:48: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;term width 0&#39; +++
+term width 0
+SafalCisco17#
+32: Safals-MacBook.local: 2021-02-11T15:08:48: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;show version&#39; +++
+show version
+Cisco IOS Software, 3700 Software (C3725-ADVENTERPRISEK9_IVS-M), Version 12.3(11)T3, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2005 by Cisco Systems, Inc.
+Compiled Wed 26-Jan-05 12:18 by pwade
+
+ROM: ROMMON Emulation Microcode
+ROM: 3700 Software (C3725-ADVENTERPRISEK9_IVS-M), Version 12.3(11)T3, RELEASE SOFTWARE (fc4)
+
+SafalCisco17 uptime is 3 weeks, 2 days, 2 hours, 30 minutes
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x0, BOOT_COUNT 0, BOOTDATA 19
+System image file is &#34;tftp://255.255.255.255/unknown&#34;
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Cisco 3725 (R7000) processor (revision 0.1) with 249856K/12288K bytes of memory.
+Processor board ID FTX0945W0MY
+R7000 CPU at 240MHz, Implementation 39, Rev 2.1, 256KB L2, 512KB L3 Cache
+18 FastEthernet interfaces
+DRAM configuration is 64 bits wide with parity enabled.
+55K bytes of NVRAM.
+131072K bytes of ATA System CompactFlash (Read/Write)
+131072K bytes of ATA Slot0 CompactFlash (Read/Write)
+
+Configuration register is 0x2102
+
+SafalCisco17#
+227: Safals-MacBook.local: 2021-02-11T15:08:51: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: configure +++
+config term
+Enter configuration commands, one per line.  End with CNTL/Z.
+SafalCisco17(config)#no logging console
+SafalCisco17(config)#line console 0
+SafalCisco17(config-line)#exec-timeout 0
+SafalCisco17(config-line)#end
+SafalCisco17#
+252: Safals-MacBook.local: 2021-02-11T15:08:52: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6 logfile /Users/safalkhanal/.pyats/runinfo/job.2021Feb11_15:08:41.379022/SafalCisco6-default-1613016532.log +++
+253: Safals-MacBook.local: 2021-02-11T15:08:52: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ Unicon plugin ios +++
+Trying 192.168.1.246...
+
+255: Safals-MacBook.local: 2021-02-11T15:08:52: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ connection to spawn: telnet 192.168.1.246 32774, id: 140212709314416 +++
+256: Safals-MacBook.local: 2021-02-11T15:08:52: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: connection to SafalCisco6
+Connected to 192.168.1.246.
+Escape character is &#39;^]&#39;.
+Connected to Dynamips VM &#34;SafalCisco6&#34; (ID 6, type c3725) - Console port
+Press ENTER to get the prompt.
+tput never, output hang never
+  Last clearing of &#34;show interface&#34; counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+FastEthernet1/14 is administratively down, line protocol is down 
+  Hardware is Fast Ethernet, address is c206.3e73.f10e (bia c206.3e73.f10e)
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Auto-duplex, Auto-speed
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of &#34;show interface&#34; counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+FastEthernet1/15 is administratively down, line protocol is down 
+  Hardware is Fast Ethernet, address is c206.3e73.f10f (bia c206.3e73.f10f)
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  Auto-duplex, Auto-speed
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of &#34;show interface&#34; counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+Vlan1 is up, line protocol is down 
+  Hardware is EtherSVI, address is c206.3e73.0000 (bia c206.3e73.0000)
+  MTU 1500 bytes, BW 100000 Kbit, DLY 1000000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of &#34;show interface&#34; counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     5028 packets output, 387156 bytes, 0 underruns
+     0 output errors, 1 interface resets
+     0 output buffer failures, 0 output buffers swapped out
+SafalCisco6#]0;SafalCisco6
+SafalCisco6#
+264: Safals-MacBook.local: 2021-02-11T15:08:54: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ initializing handle +++
+265: Safals-MacBook.local: 2021-02-11T15:08:54: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;term length 0&#39; +++
+term length 0
+SafalCisco6#
+270: Safals-MacBook.local: 2021-02-11T15:08:54: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;term width 0&#39; +++
+term width 0
+SafalCisco6#
+274: Safals-MacBook.local: 2021-02-11T15:08:54: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;show version&#39; +++
+show version
+Cisco IOS Software, 3700 Software (C3725-ADVENTERPRISEK9_IVS-M), Version 12.3(11)T3, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2005 by Cisco Systems, Inc.
+Compiled Wed 26-Jan-05 12:18 by pwade
+
+ROM: ROMMON Emulation Microcode
+ROM: 3700 Software (C3725-ADVENTERPRISEK9_IVS-M), Version 12.3(11)T3, RELEASE SOFTWARE (fc4)
+
+SafalCisco6 uptime is 5 weeks, 2 days, 2 hours, 13 minutes
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x0, BOOT_COUNT 0, BOOTDATA 19
+System image file is &#34;tftp://255.255.255.255/unknown&#34;
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Cisco 3725 (R7000) processor (revision 0.1) with 249856K/12288K bytes of memory.
+Processor board ID FTX0945W0MY
+R7000 CPU at 240MHz, Implementation 39, Rev 2.1, 256KB L2, 512KB L3 Cache
+18 FastEthernet interfaces
+DRAM configuration is 64 bits wide with parity enabled.
+55K bytes of NVRAM.
+131072K bytes of ATA System CompactFlash (Read/Write)
+131072K bytes of ATA Slot0 CompactFlash (Read/Write)
+
+Configuration register is 0x2102
+
+SafalCisco6#
+432: Safals-MacBook.local: 2021-02-11T15:08:56: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: configure +++
+config term
+Enter configuration commands, one per line.  End with CNTL/Z.
+SafalCisco6(config)#no logging console
+SafalCisco6(config)#line console 0
+SafalCisco6(config-line)#exec-timeout 0
+SafalCisco6(config-line)#end
+SafalCisco6#
+448: Safals-MacBook.local: 2021-02-11T15:08:57: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: Connection established
+449: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of subsection connectdevices is =&gt; PASSED
+450: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=450.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+451: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=450.2/3][pid=2015][p</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">createlogdir</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 84px;">450: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=450.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+451: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=450.2/3][pid=2015][pname=Task-1]: |                       Starting subsection createlogdir                       |
+452: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=450.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+453: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of subsection createlogdir is =&gt; PASSED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-2" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">SourceInterface</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:05</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">source_interface</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:05</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 1470px;">458: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=458.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+459: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=458.2/3][pid=2015][pname=Task-1]: |                      Starting section source_interface                       |
+460: Safals-MacBook.local: 2021-02-11T15:08:57: %AETEST-6-INFO: %[part=458.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+461: Safals-MacBook.local: 2021-02-11T15:08:57: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;sh ip int br&#39; +++
+sh ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.1.170   YES NVRAM  up                    up      
+FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+FastEthernet1/0            unassigned      YES unset  up                    up      
+FastEthernet1/1            unassigned      YES unset  up                    up      
+FastEthernet1/2            unassigned      YES unset  administratively down down    
+FastEthernet1/3            unassigned      YES unset  administratively down down    
+FastEthernet1/4            unassigned      YES unset  administratively down down    
+FastEthernet1/5            unassigned      YES unset  administratively down down    
+FastEthernet1/6            unassigned      YES unset  administratively down down    
+FastEthernet1/7            unassigned      YES unset  administratively down down    
+FastEthernet1/8            unassigned      YES unset  administratively down down    
+FastEthernet1/9            unassigned      YES unset  administratively down down    
+FastEthernet1/10           unassigned      YES unset  administratively down down    
+FastEthernet1/11           unassigned      YES unset  administratively down down    
+FastEthernet1/12           unassigned      YES unset  administratively down down    
+FastEthernet1/13           unassigned      YES unset  administratively down down    
+FastEthernet1/14           unassigned      YES unset  administratively down down    
+FastEthernet1/15           unassigned      YES unset  administratively down down    
+Vlan1                      1.1.1.1         YES manual up                    up      
+SafalCisco17#
+625: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.1/21][pid=2015][pname=Task-1]: device summery:
+626: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.2/21][pid=2015][pname=Task-1]: Interface                  IP-Address      OK? Method Status                Protocol
+627: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.3/21][pid=2015][pname=Task-1]: FastEthernet0/0            192.168.1.170   YES NVRAM  up                    up      
+628: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.4/21][pid=2015][pname=Task-1]: FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+629: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.5/21][pid=2015][pname=Task-1]: FastEthernet1/0            unassigned      YES unset  up                    up      
+630: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.6/21][pid=2015][pname=Task-1]: FastEthernet1/1            unassigned      YES unset  up                    up      
+631: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.7/21][pid=2015][pname=Task-1]: FastEthernet1/2            unassigned      YES unset  administratively down down    
+632: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.8/21][pid=2015][pname=Task-1]: FastEthernet1/3            unassigned      YES unset  administratively down down    
+633: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.9/21][pid=2015][pname=Task-1]: FastEthernet1/4            unassigned      YES unset  administratively down down    
+634: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.10/21][pid=2015][pname=Task-1]: FastEthernet1/5            unassigned      YES unset  administratively down down    
+635: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.11/21][pid=2015][pname=Task-1]: FastEthernet1/6            unassigned      YES unset  administratively down down    
+636: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.12/21][pid=2015][pname=Task-1]: FastEthernet1/7            unassigned      YES unset  administratively down down    
+637: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.13/21][pid=2015][pname=Task-1]: FastEthernet1/8            unassigned      YES unset  administratively down down    
+638: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.14/21][pid=2015][pname=Task-1]: FastEthernet1/9            unassigned      YES unset  administratively down down    
+639: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.15/21][pid=2015][pname=Task-1]: FastEthernet1/10           unassigned      YES unset  administratively down down    
+640: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.16/21][pid=2015][pname=Task-1]: FastEthernet1/11           unassigned      YES unset  administratively down down    
+641: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.17/21][pid=2015][pname=Task-1]: FastEthernet1/12           unassigned      YES unset  administratively down down    
+642: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.18/21][pid=2015][pname=Task-1]: FastEthernet1/13           unassigned      YES unset  administratively down down    
+643: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.19/21][pid=2015][pname=Task-1]: FastEthernet1/14           unassigned      YES unset  administratively down down    
+644: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.20/21][pid=2015][pname=Task-1]: FastEthernet1/15           unassigned      YES unset  administratively down down    
+645: Safals-MacBook.local: 2021-02-11T15:08:59: %SCRIPT-6-INFO: %[part=625.21/21][pid=2015][pname=Task-1]: Vlan1                      1.1.1.1         YES manual up                    up
+646: Safals-MacBook.local: 2021-02-11T15:08:59: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;sh interface FastEthernet0/0 switchport&#39; +++
+sh interface FastEthernet0/0 switchport
+% Fa0/0 is not a switchable port
+SafalCisco17#
+655: Safals-MacBook.local: 2021-02-11T15:09:00: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;show mac interface FastEthernet0/0&#39; +++
+show mac interface FastEthernet0/0
+SafalCisco17#
+660: Safals-MacBook.local: 2021-02-11T15:09:00: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;sh interface FastEthernet1/0 switchport&#39; +++
+sh interface FastEthernet1/0 switchport
+Name: Fa1/0
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: static access
+Administrative Trunking Encapsulation: dot1q
+Operational Trunking Encapsulation: native
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: 1
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco17#
+704: Safals-MacBook.local: 2021-02-11T15:09:01: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;show mac interface FastEthernet1/0&#39; +++
+show mac interface FastEthernet1/0
+Destination Address  Address Type  VLAN  Destination Port
+-------------------  ------------  ----  --------------------
+
+SafalCisco17#
+717: Safals-MacBook.local: 2021-02-11T15:09:01: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;sh interface FastEthernet1/1 switchport&#39; +++
+sh interface FastEthernet1/1 switchport
+Name: Fa1/1
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: static access
+Administrative Trunking Encapsulation: dot1q
+Operational Trunking Encapsulation: native
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: 1
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco17#
+760: Safals-MacBook.local: 2021-02-11T15:09:02: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco17: executing command &#39;show mac interface FastEthernet1/1&#39; +++
+show mac interface FastEthernet1/1
+Destination Address  Address Type  VLAN  Destination Port
+-------------------  ------------  ----  --------------------
+
+SafalCisco17#
+774: Safals-MacBook.local: 2021-02-11T15:09:02: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of section source_interface is =&gt; PASSED
+775: Safals-MacBook.local: 2021-02-11T15:09:02: %AETEST-6-INFO: </pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-3" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">TargetInterface</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:14</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">target_interface</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:14</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 4606px;">779: Safals-MacBook.local: 2021-02-11T15:09:02: %AETEST-6-INFO: %[part=779.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+780: Safals-MacBook.local: 2021-02-11T15:09:02: %AETEST-6-INFO: %[part=779.2/3][pid=2015][pname=Task-1]: |                      Starting section target_interface                       |
+781: Safals-MacBook.local: 2021-02-11T15:09:02: %AETEST-6-INFO: %[part=779.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+782: Safals-MacBook.local: 2021-02-11T15:09:02: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: Retrieving unused interface information...
+783: Safals-MacBook.local: 2021-02-11T15:09:02: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh ip int br&#39; +++
+sh ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.1.171   YES NVRAM  up                    up      
+FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+FastEthernet1/0            unassigned      YES unset  administratively down down    
+FastEthernet1/1            unassigned      YES unset  administratively down down    
+FastEthernet1/2            unassigned      YES unset  administratively down down    
+FastEthernet1/3            unassigned      YES unset  administratively down down    
+FastEthernet1/4            unassigned      YES unset  administratively down down    
+FastEthernet1/5            unassigned      YES unset  administratively down down    
+FastEthernet1/6            unassigned      YES unset  administratively down down    
+FastEthernet1/7            unassigned      YES unset  administratively down down    
+FastEthernet1/8            unassigned      YES unset  administratively down down    
+FastEthernet1/9            unassigned      YES unset  administratively down down    
+FastEthernet1/10           unassigned      YES unset  administratively down down    
+FastEthernet1/11           unassigned      YES unset  administratively down down    
+FastEthernet1/12           unassigned      YES unset  administratively down down    
+FastEthernet1/13           unassigned      YES unset  administratively down down    
+FastEthernet1/14           unassigned      YES unset  administratively down down    
+FastEthernet1/15           unassigned      YES unset  administratively down down    
+Vlan1                      unassigned      YES NVRAM  up                    down    
+SafalCisco6#
+925: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: number of unused ports are y
+926: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.1/21][pid=2015][pname=Task-1]: device summery:
+927: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.2/21][pid=2015][pname=Task-1]: Interface                  IP-Address      OK? Method Status                Protocol
+928: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.3/21][pid=2015][pname=Task-1]: FastEthernet0/0            192.168.1.171   YES NVRAM  up                    up      
+929: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.4/21][pid=2015][pname=Task-1]: FastEthernet0/1            unassigned      YES NVRAM  administratively down down    
+930: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.5/21][pid=2015][pname=Task-1]: FastEthernet1/0            unassigned      YES unset  administratively down down    
+931: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.6/21][pid=2015][pname=Task-1]: FastEthernet1/1            unassigned      YES unset  administratively down down    
+932: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.7/21][pid=2015][pname=Task-1]: FastEthernet1/2            unassigned      YES unset  administratively down down    
+933: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.8/21][pid=2015][pname=Task-1]: FastEthernet1/3            unassigned      YES unset  administratively down down    
+934: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.9/21][pid=2015][pname=Task-1]: FastEthernet1/4            unassigned      YES unset  administratively down down    
+935: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.10/21][pid=2015][pname=Task-1]: FastEthernet1/5            unassigned      YES unset  administratively down down    
+936: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.11/21][pid=2015][pname=Task-1]: FastEthernet1/6            unassigned      YES unset  administratively down down    
+937: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.12/21][pid=2015][pname=Task-1]: FastEthernet1/7            unassigned      YES unset  administratively down down    
+938: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.13/21][pid=2015][pname=Task-1]: FastEthernet1/8            unassigned      YES unset  administratively down down    
+939: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.14/21][pid=2015][pname=Task-1]: FastEthernet1/9            unassigned      YES unset  administratively down down    
+940: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.15/21][pid=2015][pname=Task-1]: FastEthernet1/10           unassigned      YES unset  administratively down down    
+941: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.16/21][pid=2015][pname=Task-1]: FastEthernet1/11           unassigned      YES unset  administratively down down    
+942: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.17/21][pid=2015][pname=Task-1]: FastEthernet1/12           unassigned      YES unset  administratively down down    
+943: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.18/21][pid=2015][pname=Task-1]: FastEthernet1/13           unassigned      YES unset  administratively down down    
+944: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.19/21][pid=2015][pname=Task-1]: FastEthernet1/14           unassigned      YES unset  administratively down down    
+945: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.20/21][pid=2015][pname=Task-1]: FastEthernet1/15           unassigned      YES unset  administratively down down    
+946: Safals-MacBook.local: 2021-02-11T15:09:05: %SCRIPT-6-INFO: %[part=926.21/21][pid=2015][pname=Task-1]: Vlan1                      unassigned      YES NVRAM  up                    down
+947: Safals-MacBook.local: 2021-02-11T15:09:05: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet0/1 switchport&#39; +++
+sh interface FastEthernet0/1 switchport
+% Fa0/1 is not a switchable port
+SafalCisco6#
+954: Safals-MacBook.local: 2021-02-11T15:09:05: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/0 switchport&#39; +++
+sh interface FastEthernet1/0 switchport
+Name: Fa1/0
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+993: Safals-MacBook.local: 2021-02-11T15:09:05: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/1 switchport&#39; +++
+sh interface FastEthernet1/1 switchport
+Name: Fa1/1
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1033: Safals-MacBook.local: 2021-02-11T15:09:06: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/2 switchport&#39; +++
+sh interface FastEthernet1/2 switchport
+Name: Fa1/2
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1071: Safals-MacBook.local: 2021-02-11T15:09:07: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/3 switchport&#39; +++
+sh interface FastEthernet1/3 switchport
+Name: Fa1/3
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1109: Safals-MacBook.local: 2021-02-11T15:09:08: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/4 switchport&#39; +++
+sh interface FastEthernet1/4 switchport
+Name: Fa1/4
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1150: Safals-MacBook.local: 2021-02-11T15:09:09: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/5 switchport&#39; +++
+sh interface FastEthernet1/5 switchport
+Name: Fa1/5
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1186: Safals-MacBook.local: 2021-02-11T15:09:09: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/6 switchport&#39; +++
+sh interface FastEthernet1/6 switchport
+Name: Fa1/6
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1225: Safals-MacBook.local: 2021-02-11T15:09:10: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/7 switchport&#39; +++
+sh interface FastEthernet1/7 switchport
+Name: Fa1/7
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1258: Safals-MacBook.local: 2021-02-11T15:09:11: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/8 switchport&#39; +++
+sh interface FastEthernet1/8 switchport
+Name: Fa1/8
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1296: Safals-MacBook.local: 2021-02-11T15:09:11: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/9 switchport&#39; +++
+sh interface FastEthernet1/9 switchport
+Name: Fa1/9
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1339: Safals-MacBook.local: 2021-02-11T15:09:12: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/10 switchport&#39; +++
+sh interface FastEthernet1/10 switchport
+Name: Fa1/10
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1375: Safals-MacBook.local: 2021-02-11T15:09:13: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/11 switchport&#39; +++
+sh interface FastEthernet1/11 switchport
+Name: Fa1/11
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1410: Safals-MacBook.local: 2021-02-11T15:09:14: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/12 switchport&#39; +++
+sh interface FastEthernet1/12 switchport
+Name: Fa1/12
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1446: Safals-MacBook.local: 2021-02-11T15:09:14: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/13 switchport&#39; +++
+sh interface FastEthernet1/13 switchport
+Name: Fa1/13
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1487: Safals-MacBook.local: 2021-02-11T15:09:15: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/14 switchport&#39; +++
+sh interface FastEthernet1/14 switchport
+Name: Fa1/14
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1524: Safals-MacBook.local: 2021-02-11T15:09:16: %UNICON-6-INFO: %[pid=2015][pname=Task-1]: +++ SafalCisco6: executing command &#39;sh interface FastEthernet1/15 switchport&#39; +++
+sh interface FastEthernet1/15 switchport
+Name: Fa1/15
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
+SafalCisco6#
+1560: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of section target_interface is =&gt; PASSED
+1561: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of testcase TargetInterface is =&gt; PASSED
+1562: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1562.1/3][pid=2015][pname=Task-1]: +-----------</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-4" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">MatchPort</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">migrate_port</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:00</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 126px;">1565: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1565.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+1566: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1565.2/3][pid=2015][pname=Task-1]: |                        Starting section migrate_port                         |
+1567: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1565.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+1568: Safals-MacBook.local: 2021-02-11T15:09:17: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: (SafalCisco17)FastEthernet0/0 ------&gt; (SafalCisco6)FastEthernet0/1
+1569: Safals-MacBook.local: 2021-02-11T15:09:17: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: (SafalCisco17)FastEthernet1/0 ------&gt; (SafalCisco6)FastEthernet1/0
+1570: Safals-MacBook.local: 2021-02-11T15:09:17: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: (SafalCisco17)FastEthernet1/1 ------&gt; (SafalCisco6)FastEthernet1/1
+1571: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of section migrate_port is =&gt; PASSED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+            
+            <li>
+                <div id="script-1-test-5" class="collapsible-header passed">
+                    <!-- <i class="small material-icons state">brightness_1</i> -->
+                    <i class="material-icons">arrow_drop_down</i>
+                    
+                    <span class="title">common_cleanup</span>
+                    
+                    
+                    
+                    <div class="not-collapse expand">
+                        <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                        <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                    </div>
+                    <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                    <span class="new badge time ml-1" data-badge-caption="">0:00:26</span>
+                </div>
+                <div class="collapsible-body">
+                    
+                    
+                    <!-- Sections -->
+                    <ul class="collapsible lean" data-collapsible="expandable">
+
+                        
+
+                        <!-- Section-1 -->
+                        <li class="section">
+                            <div class="collapsible-header passed">
+                                <!-- <i class="small material-icons state">brightness_1</i> -->
+                                <i class="material-icons">arrow_drop_down</i>
+                                <span class="title">clean_everything</span>
+                                
+                                <div class="not-collapse expand">
+                                    <i class="material-icons all tooltipped" data-position="top" data-delay="30" data-tooltip="expand all">expand_more</i>
+                                    <i class="material-icons none tooltipped" data-position="top" data-delay="30" data-tooltip="collapse all">expand_less</i>
+                                </div>
+                                <span class="new badge ml-1" data-badge-caption="">PASSED</span>
+                                <span class="new badge time ml-1" data-badge-caption="">0:00:26</span>
+                            </div>
+                            <div class="collapsible-body">
+                                
+                                <ul class="collapsible lean" data-collapsible="expandable">
+                                    <!-- Steps -->
+                                    
+
+                                    <!-- log -->
+                                    <li class="logs">
+                                        <div class="collapsible-header passed">
+                                            <i class="material-icons">arrow_drop_down</i>
+                                            <span class="title"><b>Section Logs</b></span>
+                                        </div>
+                                        <div class="collapsible-body">
+                                            <pre class="editor" style="height: 98px;">1576: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1576.1/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+1577: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1576.2/3][pid=2015][pname=Task-1]: |                     Starting subsection clean_everything                     |
+1578: Safals-MacBook.local: 2021-02-11T15:09:17: %AETEST-6-INFO: %[part=1576.3/3][pid=2015][pname=Task-1]: +------------------------------------------------------------------------------+
+1579: Safals-MacBook.local: 2021-02-11T15:09:17: %SCRIPT-6-INFO: %[pid=2015][pname=Task-1]: Aetest Common Cleanup 
+1580: Safals-MacBook.local: 2021-02-11T15:09:43: %AETEST-6-INFO: %[pid=2015][pname=Task-1]: The result of subsection clean_everything is =&gt; PASSED
+</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </li>
+            
+        </ul>
+    </div>
+</li>
+
+
+                </ul>
+            </div>
+        </div>
+        </div>
+
+        <div class="fixed-action-btn">
+		    <a class="btn-floating btn-large waves-effect waves-light red scrollToTop" style="display: none;">
+		      <i class="large material-icons">arrow_upward</i>
+		    </a>
+		</div>
+    </main>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/pie.js"></script>
+    <!-- <script src="https://www.amcharts.com/lib/3/serial.js"></script> -->
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <!-- AceEditor -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+
+
+    // Strip whitespace from Ace Editor text
+	var p = document.getElementsByClassName("editor");
+	for (i = 0; i < p.length; i++) {
+		p[i].textContent = p[i].textContent.replace(/^\s+/mg, "");
+	};
+
+	// Initialize Ace Editor for all .editor elements
+    var editor;
+    $('.editor').each(function( index ) {
+    	editor = ace.edit(this);
+
+    	editor.setOptions({
+	    	readOnly: true,
+	    	showLineNumbers: false,
+	    	showGutter: false,
+	    	showPrintMargin: false,
+	    });
+		editor.setTheme("ace/theme/chrome");
+    });
+
+
+    // Initialize collapse button and collapsible accordion
+    $(".button-collapse").sideNav();
+    $('.collapsible').collapsible();
+
+
+    // Open parent collapsibles when child collapsible is opened
+    $('[data-click]').on('click', function(e) {
+        var el = $($(this).attr('href'));
+        var oneUp = $(el).closest('.collapsible-body').prev('.collapsible-header');
+        var twoUp = $(oneUp).closest('.collapsible-body').prev('.collapsible-header');
+
+        $(el).trigger('click');
+        $.each([oneUp, twoUp], function(i, val) {
+            if (!$(val).hasClass('active'))
+                $(val).trigger('click');
+        });
+
+        // close sidenav on link click
+        $(this).sideNav('hide');
+    });
+
+
+    // Stop collapse event from actions clicked inside collapsible headers
+    $(".not-collapse").on("click", function(e) { e.stopPropagation(); });
+
+    // Expand or Collapse sections by trigerring a click
+    $('.expand i').on('click', function(e) {
+    	var parent, all, el;
+
+    	el = $(this);
+		parent = el.closest('.collapsible-header');
+		all = parent.next('.collapsible-body')
+				    .find('.collapsible-header');
+
+		if ( el.closest('.side-nav').length !== 0 ) {
+			headers = $('.side-nav .collapsible-header');
+
+			if ( el.hasClass('all') && !headers.hasClass('active'))
+				headers.trigger('click');
+			else if ( el.hasClass('none') && headers.hasClass('active') )
+				headers.trigger('click');
+		}
+
+		// check if the click is to expand all sections
+     	else if ( el.hasClass('all') ) {
+    		all.each( function() {
+    			if ( !$(this).hasClass('active') )
+    				$(this).trigger('click');
+    		});
+    		if ( !parent.hasClass('active') )
+    			parent.trigger('click');
+    	}
+
+    	// check if the click is to collapse all sections
+    	else if ( el.hasClass('none') ) {
+    		all.each( function() {
+    			if ( $(this).hasClass('active') )
+    				$(this).trigger('click');
+    		});
+    		// close the parent collapse section if it's open
+    		if ( parent.hasClass('active') )
+    			parent.trigger('click');
+    	}
+    });
+
+
+	// Toggle scrollToTop button visibility based on scroll
+	$(document).ready(function(){
+		//Check to see if the window is top if not then display button
+		$(window).scroll(function(){
+			if ($(this).scrollTop() > 100)
+				$('.scrollToTop').fadeIn();
+			else
+				$('.scrollToTop').fadeOut();
+		});
+		//Click event to scroll to top
+		$('.scrollToTop').click(function(){
+			$('html, body').animate({scrollTop : 0},800);
+			return false;
+		});
+	});
+
+
+	// Setup custom collapse sections
+	$('[data-function="toggler"]').on('click', function (e) {
+	    var el = $(this);
+	    var header = el.closest('.collapsible-header');
+		var collapse;
+
+		// check the data-target, find that first child, then
+		// assign for toggling
+	    if (el.attr('data-target') == 'descr') {
+	    	if (header.next('.collapsible-body').length !== 0){
+	    		console.log(header.next('.collapsible-body'))
+	    		collapse = header.next('.collapsible-body').find('.descr').first();
+	    	}
+	    	else
+	    		collapse = header.next('.descr');
+	    }
+	    else if (el.attr('data-target') == 'meta')
+	    	collapse = header.next('.collapsible-body').find('.meta').first();
+
+	    if (!header.hasClass('active'))
+	    	header.trigger('click');
+
+     	collapse.slideToggle();
+	});
+
+	// Setup the Pie Chart
+    var chart = AmCharts.makeChart("chartdiv", {
+	  "type": "pie",
+	  "startDuration": 0,
+	   "theme": "light",
+	  "addClassNames": true,
+	  "legend":{
+	   	"position":"right",
+	    "marginRight":100,
+	    "autoMargins":false
+	  },
+	  "innerRadius": "30%",
+	  "defs": {
+	    "filter": [{
+	      "id": "shadow",
+	      "width": "200%",
+	      "height": "200%",
+	      "feOffset": {
+	        "result": "offOut",
+	        "in": "SourceAlpha",
+	        "dx": 0,
+	        "dy": 0
+	      },
+	      "feGaussianBlur": {
+	        "result": "blurOut",
+	        "in": "offOut",
+	        "stdDeviation": 5
+	      },
+	      "feBlend": {
+	        "in": "SourceGraphic",
+	        "in2": "blurOut",
+	        "mode": "normal"
+	      }
+	    }]
+	  },
+	  "dataProvider": [{
+            "status": "passed",
+            "count": 5,
+            "color": "rgb(0, 170, 0)" //#00AA00
+        }, {
+            "status": "passx",
+            "count": 0,
+            "color": "rgb(0, 170, 187)" //#00AABB
+        }, {
+            "status": "failed",
+            "count": 0,
+            "color": "rgb(255, 0, 0)" //#FF0000
+        }, {
+            "status": "errored",
+            "count": 0,
+            "color": "rgb(223, 1, 215)" //#DF01D7
+        }, {
+            "status": "aborted",
+            "count": 0,
+            "color": "rgb(0, 0, 0)" //#000000
+        }, {
+            "status": "blocked",
+            "count": 0,
+            "color": "rgb(161, 10, 40)" //#A10A28
+        }, {
+            "status": "skipped",
+            "count": 0,
+            "color": "rgb(110, 110, 110)" //#6E6E6E
+        }],
+	  "valueField": "count",
+	  "titleField": "status",
+	  "colorField": "color",
+	  "export": {
+	    "enabled": true
+	  }
+	});
+
+	chart.addListener("init", handleInit);
+
+	chart.addListener("rollOverSlice", function(e) {
+	  handleRollOver(e);
+	});
+
+	function handleInit(){
+	  chart.legend.addListener("rollOverItem", handleRollOver);
+	}
+
+	function handleRollOver(e){
+	  var wedge = e.dataItem.wedge.node;
+	  wedge.parentNode.appendChild(wedge);
+	}
+    </script>
+</body>
+
+</html>

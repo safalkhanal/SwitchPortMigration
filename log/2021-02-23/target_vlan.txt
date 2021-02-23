@@ -1,0 +1,14 @@
+Name: Fa1/15
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: down
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: Disabled
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Trunking VLANs Active: none
+Priority for untagged frames: 0
+Override vlan tag priority: FALSE
+Voice VLAN: none 
+Appliance trust: none
