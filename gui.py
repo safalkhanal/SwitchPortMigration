@@ -87,7 +87,6 @@ def run_script1():
     value = messagebox.askokcancel("askokcancel", "This action takes few minutes to execute. Do you want to continue?")
     if value:
         try:
-            txt_edit.insert(tk.END, "Script to check switch port is running")
             # invoke_process_popen_poll_live('pyats run job job.py --html-logs /logs')
             os.system('pyats run job job.py --html-logs log/' + DIR_PATH_NAME)
             filepath = "log/" + DIR_PATH_NAME + "/source_up.csv"
