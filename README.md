@@ -38,7 +38,7 @@ B. If you wish to run the script using command line, following steps needs to be
     ```
    
 ## Testbed sample file
-Use csv template in testbed folder to populate source and target switch information
+Use template in testbed folder to populate source and target switch information
 
 hostname | ip | username | password | protocol | os |
 --- | --- | --- | --- |--- |--- |
