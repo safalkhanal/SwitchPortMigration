@@ -12,9 +12,9 @@ from os import path
 from csv import writer
 import csv
 import logging
+import time
 from pyats import aetest
 from pyats.topology import loader
-import time
 import pandas as pd
 
 DIR_PATH_NAME = time.strftime("%Y-%m-%d")

@@ -9,11 +9,13 @@ __status__ = "In Development"
 
 import csv
 import logging
+import os
+from csv import writer
+import time
 from pyats import aetest
 from pyats.topology import loader
-from csv import writer
 import pandas as pd
-import time
+
 
 log = logging.getLogger(__name__)
 testbed = loader.load('targettestbed.yml')

@@ -25,8 +25,8 @@ import csv
 import time
 from os import path
 os.system('pip3 install xlrd')
-os.system('pip3 install genie')
 os.system('pip3 install pyats')
+os.system('pip3 install genie')
 os.system('pip3 install pyats.contrib')
 try:
     import pandas as pd
@@ -167,7 +167,7 @@ def run_targetconfig():
     if value:
         txt_edit.config(state=tk.NORMAL)
         txt_edit.delete("1.0", tk.END)
-        os.system('python target_config.py')
+        os.system('pyats run job check_migration_job.py --html-logs log/' + DIR_PATH_NAME)
         filepath = "log/" + DIR_PATH_NAME + "/switch_migration_status.csv"
         with open(filepath, "r") as input_file:
             text = input_file.read()
@@ -205,8 +205,8 @@ def openNewWindow():
 
 
 def send_email(e1, newWindow):
-    subject = "Switch log file"
-    body = "Hi, \n\nSome of the log files generated during switch port migration are attached in the mail. \n\nThank " \
+    subject = "Switch Port Consolidation log files"
+    body = "Hi, \n\nFew of the log files generated during switch port migration are attached in the mail. \n\nThank " \
            "you, \nRespiro team. "
     sender_email = "respirotest0@gmail.com"
     receiver_email = e1.get()
@@ -223,7 +223,8 @@ def send_email(e1, newWindow):
     if path.exists(current_dir + '/log/' + DIR_PATH_NAME + '/switch_migration_status.csv'):
         filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
                     "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv",
-                    "log/" + DIR_PATH_NAME + "/switch_migration_status.csv", "log/" + DIR_PATH_NAME + "/report.txt"}
+                    "log/" + DIR_PATH_NAME + "/switch_migration_status.csv", "log/" + DIR_PATH_NAME + "/report.txt",
+                    "log/" + DIR_PATH_NAME + "/TaskLog.check_migration_job.html"}
     else:
         filename = {"log/" + DIR_PATH_NAME + "/source_up.csv", "log/" + DIR_PATH_NAME + "/TaskLog.job.html",
                     "log/" + DIR_PATH_NAME + "/target_down.csv", "log/" + DIR_PATH_NAME + "/report_log.csv",
