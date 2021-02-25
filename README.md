@@ -10,7 +10,7 @@ A. If you wish to run the project using GUI, run the gui.py file
 ```bash
 python gui.py
 ```
-B. If you wish to run the script using command line, following steps needs to be followed:
+B. If you wish to run the script using command line, navigate to the project folder and run the following commands:
 1. Install following python modules
     ```bash
     pip3 install pyats
