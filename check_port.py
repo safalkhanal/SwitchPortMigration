@@ -96,6 +96,12 @@ class SourceInterface(aetest.Testcase):
                                     break
                                 else:
                                     vlan_value = " "
+
+                                if "Name:" in each:
+                                    port_short_name_array = each.split(" ")
+                                    port_short_name = port_short_name_array[1]
+                                else:
+                                    port_short_name = word
                         show_mac = device1.execute("show mac address interface " + word)
                         mac_file = open("log/" + DIR_PATH_NAME + "/mac_log.txt", "w")
                         mac_file.write(show_mac + '\n')
@@ -103,8 +109,8 @@ class SourceInterface(aetest.Testcase):
                         mac_address = ''
                         with open("log/" + DIR_PATH_NAME + "/mac_log.txt", 'r') as tac:
                             for lines in tac:
-                                if word in lines:
-                                    mac_address = lines.split(' ')[0]
+                                if word in lines or port_short_name in lines:
+                                    mac_address = lines.split(' ')[1]
 
                         row_contents = [device, word, 'up', vlan_value, mac_address]
                         # append all the port data that has status up by calling a class method
@@ -156,7 +162,7 @@ class TargetInterface(aetest.Testcase):
             with open("log/" + DIR_PATH_NAME + "/onetarget.txt") as file:
                 for line in file:
                     line = line.rstrip()
-                    if "down" in line and line.find('Vlan') == -1 and line.find("Gig") == -1 and line.find(
+                    if "down" in line and line.find('Vlan') == -1 and line.find("Te") == -1 and line.find(
                             "Null") == -1:
                         word = line.split(' ')[0]
                         show_vlan = device1.execute("sh interface " + word + " switchport")

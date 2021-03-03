@@ -60,6 +60,28 @@ class CheckTarget(aetest.Testcase):
                             # split the line using space to find the port status
                             port_status = port_line.split(' ')[-1]
 
+                # get the switchport info to get the short name for port and check that port short name in mac address
+                # table to get mac address
+                show_vlan = device.execute("sh interface " + values["TargetPort"] + " switchport")
+                temp = open("log/" + DIR_PATH_NAME + "/target_vlan.txt", "w")
+                temp.write(show_vlan)
+                temp.close()
+                with open("log/" + DIR_PATH_NAME + "/target_vlan.txt") as vlan_file:
+                    for each in vlan_file:
+                        each = each.rstrip()
+                        if "Access Mode VLAN:" in each:
+                            vlan_array = each.split(" ")
+                            vlan_value = vlan_array[len(vlan_array) - 2]
+                            break
+                        else:
+                            vlan_value = " "
+
+                        if "Name:" in each:
+                            port_short_name_array = each.split(" ")
+                            port_short_name = port_short_name_array[1]
+                        else:
+                            port_short_name = values["TargetPort"]
+
                 # Check for the mac address of target interface
                 data = device.execute("show mac address interface " + values["TargetPort"])
                 mac_file = open("log/"+DIR_PATH_NAME+"/targetmac_after_config.txt", "w")
@@ -68,8 +90,8 @@ class CheckTarget(aetest.Testcase):
                 mac_address = ''
                 with open("log/"+DIR_PATH_NAME+"/targetmac_after_config.txt", 'r') as tac:
                     for lines in tac:
-                        if values["TargetPort"] in lines:
-                            mac_address = lines.split(' ')[0]
+                        if values["TargetPort"] in lines or port_short_name in lines:
+                            mac_address = lines.split(' ')[1]
 
                 with open("log/"+DIR_PATH_NAME+"/source_up.csv", 'r') as su:
                     data = csv.DictReader(su, delimiter=',')

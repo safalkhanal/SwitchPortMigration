@@ -1,0 +1,15 @@
+devices:
+  SafalCisco6:
+    connections:
+      cli:
+        ip: 192.168.1.246
+        port: 32774
+        protocol: telnet
+    credentials:
+      default:
+        password: cisco
+        username: cisco
+      enable:
+        password: cisco
+    os: ios
+    type: ios
