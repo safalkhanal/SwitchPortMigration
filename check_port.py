@@ -96,7 +96,7 @@ class SourceInterface(aetest.Testcase):
                                     break
                                 else:
                                     vlan_value = " "
-                        show_mac = device1.execute("show mac interface " + word)
+                        show_mac = device1.execute("show mac address interface " + word)
                         mac_file = open("log/" + DIR_PATH_NAME + "/mac_log.txt", "w")
                         mac_file.write(show_mac + '\n')
                         mac_file.close()
@@ -148,7 +148,7 @@ class TargetInterface(aetest.Testcase):
             f.write('\n' + "===========================================")
             f.close()
             temp = open("log/" + DIR_PATH_NAME + "/onetarget.txt", "w")
-            temp.write("====This is the switch interface log fro the last switch in the provided excel list===\n")
+            temp.write("====This is the switch interface log for the last switch in the provided excel list===\n")
             temp.write("====This file is used to check the interface status of each switch and select the unused "
                        "interface===\n")
             temp.write(targetdevice1)

@@ -61,7 +61,7 @@ class CheckTarget(aetest.Testcase):
                             port_status = port_line.split(' ')[-1]
 
                 # Check for the mac address of target interface
-                data = device.execute("show mac interface " + values["TargetPort"])
+                data = device.execute("show mac address interface " + values["TargetPort"])
                 mac_file = open("log/"+DIR_PATH_NAME+"/targetmac_after_config.txt", "w")
                 mac_file.write(data + '\n')
                 mac_file.close()
