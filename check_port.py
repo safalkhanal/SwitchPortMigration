@@ -34,11 +34,11 @@ class common_setup(aetest.CommonSetup):
         try:
             for device in source_testbed.devices:
                 device1 = source_testbed.devices[device]
-                device1.connect()
+                device1.connect(init_config_commands=[])
 
             for device in target_testbed.devices:
                 device1 = target_testbed.devices[device]
-                device1.connect()
+                device1.connect(init_config_commands=[])
             log.info("Connection established")
         except ConnectionError:
             log.info("Connection rejected")

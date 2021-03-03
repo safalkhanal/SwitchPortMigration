@@ -31,7 +31,7 @@ class common_setup(aetest.CommonSetup):
         log.info("Connecting to  devices.....")
         for device in testbed.devices:
             device1 = testbed.devices[device]
-            device1.connect()
+            device1.connect(init_config_commands=[])
 
 
 ###################################################################
@@ -45,7 +45,7 @@ class CheckTarget(aetest.Testcase):
             data = csv.DictReader(r, delimiter=',')
             for values in data:
                 device = testbed.devices[values["TargetSwitch"]]
-                device.connect()
+                device.connect(init_config_commands=[])
 
                 # Check if the recommended target interface is up
                 data = device.execute("show interface " + values["TargetPort"])
