@@ -102,7 +102,7 @@ class SourceInterface(aetest.Testcase):
                                     port_short_name = port_short_name_array[1]
                                 else:
                                     port_short_name = word
-                        show_mac = device1.execute("show mac address interface " + word)
+                        show_mac = device1.execute("show mac interface " + word)
                         mac_file = open("log/" + DIR_PATH_NAME + "/mac_log.txt", "w")
                         mac_file.write(show_mac + '\n')
                         mac_file.close()
